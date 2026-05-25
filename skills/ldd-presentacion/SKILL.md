@@ -42,6 +42,20 @@ No uses esta skill para:
 
 ---
 
+## Reglas mandatorias de trazabilidad BBOK
+
+- Los títulos usados en la arquitectura y en los briefs de slides deben ser **copias exactas del BBOK**.
+- Excepciones permitidas: slides estructurales sin fuente BBOK directa (`PORTADA`, `AGENDA`, `CIERRE`) pueden usar nombres funcionales institucionales; actividades prácticas del Esquema pueden usar el título exacto del Esquema. Todos los `DIVISOR`, `CONCEPTO`, `TÉCNICO` y slides `EJEMPLO` derivados del contenido técnico deben conservar el título BBOK exacto.
+- Prohibido reescribir, resumir, pedagogizar, embellecer, traducir, acortar o crear títulos alternativos.
+- Prohibido incluir una columna de "título sugerido", "título visual", "microtema" o equivalente.
+- La taxonomía `CONCEPTO`, `TÉCNICO`, `EJEMPLO`, `DIVISOR`, etc. clasifica el **tipo didáctico de la slide**; no autoriza a renombrar el contenido fuente.
+- Si un bloque del BBOK requiere varias slides, repetir el mismo `Título BBOK exacto` y diferenciar las slides con `Parte 1`, `Parte 2`, etc. en la columna `Observación de trazabilidad`, no en el título.
+- Las actividades prácticas del Esquema minuto a minuto son obligatorias en la arquitectura. Si no existen en el BBOK, usar exactamente el título del Esquema y marcarlas como fuente `Esquema` en la observación de trazabilidad.
+- No omitir actividades prácticas (`P`) del Esquema bajo el argumento de que no son contenido BBOK. Deben aparecer como slides tipo `EJEMPLO` o `ACTIVIDAD` según corresponda.
+- Si una slide no tiene fuente directa en el BBOK ni corresponde a una actividad práctica explícita del Esquema, detenerse y pedir confirmación al usuario antes de incluirla. No inventar slides no trazadas.
+
+---
+
 ## Steps
 
 ### 1. Verificar prerequisitos
@@ -75,6 +89,7 @@ Basarse en el Esquema minuto a minuto:
 
 1. Contar los tópicos principales y sus duraciones
 2. Calcular slides de contenido: **1 slide cada 3–4 minutos de contenido activo** (no contar actividades ni evaluaciones)
+   - Excepción obligatoria: las actividades prácticas del Esquema (`P`) sí deben incluirse como slides de arquitectura, conservando exactamente el título del Esquema y su duración.
 3. Sumar estructura fija:
    - 1 slide PORTADA
    - 1 slide AGENDA
@@ -83,12 +98,12 @@ Basarse en el Esquema minuto a minuto:
 4. Producir tabla de arquitectura antes de generar los briefs:
 
 ```markdown
-| # | Tipo | Concepto | Tópico | Min. aprox. |
-|---|---|---|---|---|
-| 1 | PORTADA | Nombre del curso | — | — |
-| 2 | AGENDA | Tabla de contenido | — | — |
-| 3 | DIVISOR | Nombre Tópico 1 | Tópico 1 | — |
-| 4 | CONCEPTO | [concepto] | Tópico 1 | 3 |
+| # | Tipo | Título BBOK exacto | Tópico fuente | Min. aprox. | Observación de trazabilidad |
+|---|---|---|---|---|---|
+| 1 | PORTADA | [nombre exacto del curso] | — | — | Portada institucional |
+| 2 | AGENDA | [títulos exactos de tópicos BBOK] | — | — | Agenda construida solo con tópicos BBOK |
+| 3 | DIVISOR | [título exacto del Tópico 1 en BBOK] | Tópico 1 | — | Divisor del tópico fuente |
+| 4 | CONCEPTO | [título exacto del bloque BBOK] | Tópico 1 | 3 | Slide trazada al BBOK |
 ...
 ```
 
@@ -106,7 +121,11 @@ Usar la siguiente taxonomía:
 | **CONCEPTO** | Idea, principio o definición expresada mediante metáfora visual |
 | **TÉCNICO** | Diagrama, tabla, animación de componente o proceso — requiere datos exactos del BBOK |
 | **EJEMPLO** | Caso real, escenario operativo, ejercicio o situación de aplicación |
+| **ACTIVIDAD** | Momento práctico definido en el Esquema — conservar exactamente el título del Esquema |
 | **CIERRE** | Síntesis del tópico o del curso — puntos clave visualizados |
+
+> La clasificación de tipo didáctico no cambia el título. El título visible y el encabezado del brief siguen siendo el `Título BBOK exacto`.
+> Para actividades prácticas que no existen en BBOK, el título visible y el encabezado del brief deben ser el título exacto del Esquema.
 
 ### 5. Generar el brief por slide
 
@@ -132,6 +151,13 @@ Para cada slide, producir el bloque completo según el formato de output. Ver se
 **EJEMPLO:**
 - Incluir el contexto real del caso: equipo específico, operación concreta, consecuencia real
 - El visual debe ser reconocible para el participante — su industria, sus máquinas, su entorno
+- Si el ejemplo corresponde a una actividad práctica del Esquema, copiar exactamente el título de la actividad y conservar la duración definida en el Esquema.
+
+**ACTIVIDAD:**
+- Usar cuando el Esquema define explícitamente un momento práctico (`P`) con nombre de actividad.
+- Copiar el título exactamente como aparece en el Esquema, incluyendo prefijos como `Actividad:` si existen.
+- No renombrar la actividad para hacerla más atractiva o visual.
+- La observación de trazabilidad debe indicar: `Fuente Esquema; actividad práctica obligatoria`.
 
 ### 6. Guardar outputs
 
@@ -172,11 +198,11 @@ Para cada slide, producir el bloque completo según el formato de output. Ver se
 
 ## Arquitectura de Slides
 
-| # | Tipo | Concepto | Tópico | Min. aprox. |
-|---|---|---|---|---|
-| 1 | PORTADA | [nombre del curso] | — | — |
+| # | Tipo | Título BBOK exacto | Tópico fuente | Min. aprox. | Observación de trazabilidad |
+|---|---|---|---|---|---|
+| 1 | PORTADA | [nombre exacto del curso] | — | — | Portada institucional |
 ...
-| N | CIERRE | Síntesis | — | — |
+| N | CIERRE | Síntesis del curso | — | — | Cierre institucional |
 **Total: N slides**
 
 ---
@@ -185,7 +211,7 @@ Para cada slide, producir el bloque completo según el formato de output. Ver se
 
 ---
 
-### Slide 1 — PORTADA — [Nombre del curso]
+### Slide 1 — PORTADA — [Nombre exacto del curso]
 
 **TEXTO EN PANTALLA**
 | Elemento | Texto | Posición |
@@ -220,9 +246,9 @@ El participante entra al "mundo" del curso — el ambiente visual les dice en qu
 | Elemento | Texto | Posición |
 |---|---|---|
 | Header | CONTENIDO | Superior centrado |
-| Tópico 1 | [nombre tópico 1] | [contenedor visual 1] |
-| Tópico 2 | [nombre tópico 2] | [contenedor visual 2] |
-| Tópico N | [nombre tópico N] | [contenedor visual N] |
+| Tópico 1 | [título exacto del tópico 1 en BBOK] | [contenedor visual 1] |
+| Tópico 2 | [título exacto del tópico 2 en BBOK] | [contenedor visual 2] |
+| Tópico N | [título exacto del tópico N en BBOK] | [contenedor visual N] |
 
 **HISTORIA VISUAL**
 El participante ve el mapa completo del viaje que va a recorrer.
@@ -241,13 +267,13 @@ El participante ve el mapa completo del viaje que va a recorrer.
 
 ---
 
-### Slide [N] — DIVISOR — [Nombre del Tópico]
+### Slide [N] — DIVISOR — [Título exacto del tópico BBOK]
 
 **TEXTO EN PANTALLA**
 | Elemento | Texto | Posición |
 |---|---|---|
 | Número de tópico | [N] | Esquina o área secundaria |
-| Título del tópico | [NOMBRE DEL TÓPICO] | Centro o posición dominante |
+| Título del tópico | [TÍTULO EXACTO DEL TÓPICO BBOK] | Centro o posición dominante |
 
 **HISTORIA VISUAL**
 Una transición visual clara — el participante sabe que empieza una nueva sección.
@@ -267,7 +293,7 @@ Una transición visual clara — el participante sabe que empieza una nueva secc
 
 ---
 
-### Slide [N] — CONCEPTO — [Nombre del concepto]
+### Slide [N] — CONCEPTO — [Título BBOK exacto]
 
 **TEXTO EN PANTALLA**
 | Elemento | Texto | Posición |
@@ -298,12 +324,12 @@ Una transición visual clara — el participante sabe que empieza una nueva secc
 
 ---
 
-### Slide [N] — TÉCNICO — [Nombre del componente o proceso]
+### Slide [N] — TÉCNICO — [Título BBOK exacto]
 
 **TEXTO EN PANTALLA**
 | Elemento | Texto | Posición |
 |---|---|---|
-| Header | [nombre del componente/proceso] | Superior |
+| Header | [título BBOK exacto] | Superior |
 | Label técnico 1 | [dato exacto del BBOK] | [posición sobre el diagrama] |
 | Label técnico 2 | [dato exacto del BBOK] | [posición sobre el diagrama] |
 | Unidades / norma | [unidad o referencia ISO/ANSI] | [posición] |
@@ -331,7 +357,7 @@ Una transición visual clara — el participante sabe que empieza una nueva secc
 
 ---
 
-### Slide [N] — EJEMPLO — [Nombre del caso o ejercicio]
+### Slide [N] — EJEMPLO — [Título BBOK exacto de la actividad, caso o ejercicio]
 
 **TEXTO EN PANTALLA**
 | Elemento | Texto | Posición |
@@ -358,7 +384,34 @@ Una transición visual clara — el participante sabe que empieza una nueva secc
 
 ---
 
-### Slide [N] — CIERRE — [Síntesis del tópico o del curso]
+### Slide [N] — ACTIVIDAD — [Título exacto del Esquema]
+
+**TEXTO EN PANTALLA**
+| Elemento | Texto | Posición |
+|---|---|---|
+| Header | [título exacto del Esquema] | Superior |
+| Consigna | [instrucción breve para participantes] | Área principal |
+| Tiempo | [duración exacta del Esquema] | Esquina o panel secundario |
+
+**HISTORIA VISUAL**
+[Una frase: qué situación práctica reconoce el participante y qué decisión debe tomar.]
+
+**BRIEF DISEÑO**
+- Escena: [contexto real de la actividad según el Esquema y la Lluvia de Ideas]
+- Materiales: [materiales indicados para la actividad, si existen]
+- Trazabilidad: Fuente Esquema; actividad práctica obligatoria
+
+**SECUENCIA DE ANIMACIÓN**
+1. Escena / contexto aparece
+2. Consigna de la actividad aparece
+3. Tiempo y materiales aparecen antes de iniciar la práctica
+
+**NOTA FACILITADOR**
+[Cómo organiza la actividad, cuánto tiempo da, cómo recoge respuestas y cómo hace el debrief.]
+
+---
+
+### Slide [N] — CIERRE — [Título BBOK exacto o Síntesis del curso]
 
 **TEXTO EN PANTALLA**
 | Elemento | Texto | Posición |
@@ -388,16 +441,16 @@ El participante ve los conceptos clave del tópico/curso conectados — el mapa 
 
 ## Resumen de Slides
 
-| # | Tipo | Concepto | Tópico |
-|---|---|---|---|
-| 1 | PORTADA | [nombre del curso] | — |
-| 2 | AGENDA | Contenido | — |
-| 3 | DIVISOR | [Tópico 1] | Tópico 1 |
-| ... | | | |
-| N | CIERRE | Síntesis | — |
+| # | Tipo | Título BBOK exacto | Tópico fuente | Observación de trazabilidad |
+|---|---|---|---|---|
+| 1 | PORTADA | [nombre exacto del curso] | — | Portada institucional |
+| 2 | AGENDA | [títulos exactos de tópicos BBOK] | — | Agenda construida solo con tópicos BBOK |
+| 3 | DIVISOR | [título exacto del Tópico 1 en BBOK] | Tópico 1 | Divisor del tópico fuente |
+| ... | | | | |
+| N | CIERRE | Síntesis del curso | — | Cierre institucional |
 
 **Total: [N] slides**
-**Distribución por tipo:** PORTADA: 1 | AGENDA: 1 | DIVISOR: X | CONCEPTO: X | TÉCNICO: X | EJEMPLO: X | CIERRE: X
+**Distribución por tipo:** PORTADA: 1 | AGENDA: 1 | DIVISOR: X | CONCEPTO: X | TÉCNICO: X | EJEMPLO: X | ACTIVIDAD: X | CIERRE: X
 ```
 
 ---
