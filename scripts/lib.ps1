@@ -1,4 +1,4 @@
-# scripts/lib.ps1 — Shared PowerShell helpers for the Ingnovarte Learning Stack installer
+# scripts/lib.ps1 - Shared PowerShell helpers for the Ingnovarte Learning Stack installer
 # Dot-source this file from other scripts: . "$PSScriptRoot\lib.ps1"
 # Do NOT execute directly.
 
@@ -50,7 +50,7 @@ function Get-FileHashSHA256 {
 }
 
 # ---------------------------------------------------------------------------
-# JSON helpers (pure PowerShell — no jq dependency)
+# JSON helpers (pure PowerShell - no jq dependency)
 # ---------------------------------------------------------------------------
 
 # Test-JsonKey -Path <file> -KeyPath <dotted-key>

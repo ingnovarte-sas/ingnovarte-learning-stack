@@ -1,4 +1,4 @@
-# scripts/build-registry.ps1 — Scan ldd-* skills and build .atl/skill-registry.md
+# scripts/build-registry.ps1 - Scan ldd-* skills and build .atl/skill-registry.md
 #
 # Usage:
 #   .\scripts\build-registry.ps1 [-RepoRoot <path>] [-DryRun]
@@ -60,7 +60,7 @@ function Get-FrontmatterField {
         [string]$FieldName
     )
 
-    $lines = Get-Content -Path $FilePath
+    $lines = Get-Content -Path $FilePath -Encoding UTF8
     $inFrontmatter = $false
     $fmCount = 0
     $foundField = $false
@@ -102,7 +102,7 @@ function Get-FrontmatterField {
 $DateNow = Get-Date -Format 'yyyy-MM-dd'
 
 # Replace {DATE} placeholder in header template
-$headerContent = (Get-Content -Raw -Path $HeaderFile) -replace '\{DATE\}', $DateNow
+$headerContent = (Get-Content -Raw -Path $HeaderFile -Encoding UTF8) -replace '\{DATE\}', $DateNow
 
 $tableRows = [System.Text.StringBuilder]::new()
 
@@ -144,7 +144,7 @@ $registryContent = $headerContent + "`n" + $tableRows.ToString()
 if ($DryRun) {
     Write-Output $registryContent
     Write-Host ""
-    Write-Host "[ok]    dry-run — no files written"
+    Write-Host "[ok]    dry-run - no files written"
 } else {
     # Ensure output directory exists
     $outputDir = Split-Path -Parent $OutputFile
@@ -154,7 +154,7 @@ if ($DryRun) {
 
     # Hash-based idempotency: skip write if content unchanged
     if (Test-Path $OutputFile) {
-        $existingContent = Get-Content -Raw -Path $OutputFile
+        $existingContent = Get-Content -Raw -Path $OutputFile -Encoding UTF8
         if ($existingContent -eq $registryContent) {
             Write-Host "[skip]  skill-registry.md is already up to date"
             exit 0
