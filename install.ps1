@@ -241,6 +241,112 @@ function Invoke-MergeMcpOpenCode {
 }
 
 # ---------------------------------------------------------------------------
+# Action: add LDD slash commands to opencode.json (OpenCode)
+# ---------------------------------------------------------------------------
+
+function Get-OpenCodeLddCommands {
+    return @{
+        'ldd-onboard' = @{
+            description = 'Verifica la instalacion del Ingnovarte Learning Stack.'
+            prompt = 'Ejecuta ldd-onboard siguiendo AGENTS.md. Verifica el setup del Ingnovarte Learning Stack y devuelve el reporte final.'
+        }
+        'ldd-init' = @{
+            description = 'Inicializa la estructura LDD de un curso.'
+            prompt = 'Ejecuta ldd-init siguiendo AGENTS.md. Si falta codigo, nombre o carpeta del curso, pregunta solo lo necesario antes de delegar.'
+        }
+        'ldd-kickoff' = @{
+            description = 'Prepara o procesa el kickoff del curso.'
+            prompt = 'Ejecuta ldd-kickoff siguiendo AGENTS.md y el Phase Guard LDD.'
+        }
+        'ldd-contextualizacion' = @{
+            description = 'Procesa entrevistas, inmersion y analisis documental.'
+            prompt = 'Ejecuta ldd-contextualizacion siguiendo AGENTS.md y el Phase Guard LDD.'
+        }
+        'ldd-ficha' = @{
+            description = 'Genera la Ficha Tecnica del curso.'
+            prompt = 'Ejecuta ldd-ficha siguiendo AGENTS.md y el Phase Guard LDD.'
+        }
+        'ldd-bbok' = @{
+            description = 'Genera el BBOK del curso.'
+            prompt = 'Ejecuta ldd-bbok siguiendo AGENTS.md y el Phase Guard LDD.'
+        }
+        'ldd-lluvia' = @{
+            description = 'Genera la lluvia de ideas de actividades.'
+            prompt = 'Ejecuta ldd-lluvia siguiendo AGENTS.md y el Phase Guard LDD.'
+        }
+        'ldd-esquema' = @{
+            description = 'Genera el esquema minuto a minuto del curso.'
+            prompt = 'Ejecuta ldd-esquema siguiendo AGENTS.md y el Phase Guard LDD.'
+        }
+        'ldd-bok' = @{
+            description = 'Genera el BOK final del curso.'
+            prompt = 'Ejecuta ldd-bok siguiendo AGENTS.md y el Phase Guard LDD.'
+        }
+        'ldd-presentacion' = @{
+            description = 'Genera el brief de presentacion slide por slide.'
+            prompt = 'Ejecuta ldd-presentacion siguiendo AGENTS.md y el Phase Guard LDD. Respeta titulos fuente exactos del BBOK y actividades exactas del Esquema.'
+        }
+        'ldd-guias' = @{
+            description = 'Genera guias de actividades del curso.'
+            prompt = 'Ejecuta ldd-guias siguiendo AGENTS.md y el Phase Guard LDD.'
+        }
+        'ldd-evaluaciones' = @{
+            description = 'Genera evaluaciones, rubricas y encuestas.'
+            prompt = 'Ejecuta ldd-evaluaciones siguiendo AGENTS.md y el Phase Guard LDD.'
+        }
+        'ldd-informe' = @{
+            description = 'Genera informes de retroalimentacion o eficacia.'
+            prompt = 'Ejecuta ldd-informe siguiendo AGENTS.md y el Phase Guard LDD.'
+        }
+        'ldd-review' = @{
+            description = 'Revisa un entregable LDD.'
+            prompt = 'Ejecuta ldd-review siguiendo AGENTS.md. Revisa calidad, trazabilidad y coherencia pedagogica del entregable indicado por el usuario.'
+        }
+        'ldd-status' = @{
+            description = 'Actualiza avance del plan de gestion del curso.'
+            prompt = 'Ejecuta ldd-status siguiendo AGENTS.md. Actualiza el plan de gestion solo con confirmacion del usuario.'
+        }
+    }
+}
+
+function Invoke-MergeOpenCodeCommands {
+    if (-not $Script:ConfigureOpenCode) { return }
+
+    $ocFile = $null
+    $ocPath1 = Join-Path $env:APPDATA 'opencode\opencode.json'
+    $ocPath2 = Join-Path $env:LOCALAPPDATA 'opencode\opencode.json'
+    if (Test-Path $ocPath1) {
+        $ocFile = $ocPath1
+    } elseif (Test-Path $ocPath2) {
+        $ocFile = $ocPath2
+    } else {
+        $ocDir = Join-Path $env:APPDATA 'opencode'
+        if (-not (Test-Path $ocDir)) { New-Item -ItemType Directory -Path $ocDir -Force | Out-Null }
+        $ocFile = $ocPath1
+    }
+
+    $commands = Get-OpenCodeLddCommands
+
+    if ($DryRun) {
+        Write-Info "[dry-run] Would ensure $($commands.Count) LDD slash command(s) in $ocFile"
+        $Script:CountSkip++
+        return
+    }
+
+    if (Test-Path $ocFile) {
+        if (-not (Test-JsonKey -Path $ocFile -KeyPath 'command')) {
+            Add-JsonKey -Path $ocFile -KeyPath 'command' -Value @{}
+        }
+    }
+
+    foreach ($name in ($commands.Keys | Sort-Object)) {
+        Add-JsonKey -Path $ocFile -KeyPath "command.$name" -Value $commands[$name]
+    }
+
+    $Script:CountOk++
+}
+
+# ---------------------------------------------------------------------------
 # Action: append gitignore entries
 # ---------------------------------------------------------------------------
 
@@ -286,6 +392,7 @@ function Invoke-Apply {
     Invoke-RegenerateRegistry
     Invoke-MergeMcpClaude
     Invoke-MergeMcpOpenCode
+    Invoke-MergeOpenCodeCommands
     Invoke-AppendGitignore
 
     Write-Info ''
