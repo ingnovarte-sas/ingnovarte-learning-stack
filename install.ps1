@@ -193,6 +193,25 @@ function Invoke-MergeMcpClaude {
 }
 
 # ---------------------------------------------------------------------------
+# Resolve the OpenCode config file path.
+# OpenCode reads from ~/.config/opencode/opencode.json on all platforms.
+# %APPDATA%\opencode\ is the installation dir (exe), not the config dir.
+# ---------------------------------------------------------------------------
+
+function Get-OpenCodeConfigPath {
+    # Primary: ~/.config/opencode/opencode.json (standard across all platforms)
+    $primary = Join-Path $env:USERPROFILE '.config\opencode\opencode.json'
+    if (Test-Path $primary) { return $primary }
+
+    # Fallback: %APPDATA%\opencode\opencode.json (older installations)
+    $fallback = Join-Path $env:APPDATA 'opencode\opencode.json'
+    if (Test-Path $fallback) { return $fallback }
+
+    # Default: use primary path (installer will create the file)
+    return $primary
+}
+
+# ---------------------------------------------------------------------------
 # Action: merge Engram into opencode.json (OpenCode)
 # ---------------------------------------------------------------------------
 
@@ -204,19 +223,9 @@ function Invoke-MergeMcpOpenCode {
         return
     }
 
-    # Locate or create opencode.json
-    $ocFile = $null
-    $ocPath1 = Join-Path $env:APPDATA 'opencode\opencode.json'
-    $ocPath2 = Join-Path $env:LOCALAPPDATA 'opencode\opencode.json'
-    if (Test-Path $ocPath1) {
-        $ocFile = $ocPath1
-    } elseif (Test-Path $ocPath2) {
-        $ocFile = $ocPath2
-    } else {
-        $ocDir = Join-Path $env:APPDATA 'opencode'
-        if (-not (Test-Path $ocDir)) { New-Item -ItemType Directory -Path $ocDir -Force | Out-Null }
-        $ocFile = $ocPath1
-    }
+    $ocFile = Get-OpenCodeConfigPath
+    $ocDir = Split-Path $ocFile -Parent
+    if (-not (Test-Path $ocDir)) { New-Item -ItemType Directory -Path $ocDir -Force | Out-Null }
 
     $engramValue = [ordered]@{
         type        = 'local'
@@ -316,18 +325,9 @@ function Get-LddCommandDefinitions {
 function Invoke-MergeOpenCodeCommands {
     if (-not $Script:ConfigureOpenCode) { return }
 
-    $ocFile = $null
-    $ocPath1 = Join-Path $env:APPDATA 'opencode\opencode.json'
-    $ocPath2 = Join-Path $env:LOCALAPPDATA 'opencode\opencode.json'
-    if (Test-Path $ocPath1) {
-        $ocFile = $ocPath1
-    } elseif (Test-Path $ocPath2) {
-        $ocFile = $ocPath2
-    } else {
-        $ocDir = Join-Path $env:APPDATA 'opencode'
-        if (-not (Test-Path $ocDir)) { New-Item -ItemType Directory -Path $ocDir -Force | Out-Null }
-        $ocFile = $ocPath1
-    }
+    $ocFile = Get-OpenCodeConfigPath
+    $ocDir = Split-Path $ocFile -Parent
+    if (-not (Test-Path $ocDir)) { New-Item -ItemType Directory -Path $ocDir -Force | Out-Null }
 
     $commands = Get-LddCommandDefinitions
 
@@ -394,7 +394,7 @@ function Invoke-WriteClaudeCommands {
 function Invoke-AppendGitignore {
     $gitignore = Join-Path $RepoRoot '.gitignore'
     $sectionMarker = '# Ingnovarte Learning Stack'
-    $entries = @('cursos/', 'gentle-ai/', '.atl/skill-registry.md', '.atl/.skill-registry.cache.json')
+    $entries = @('cursos/', 'gentle-ai/', '.atl/skill-registry.md', '.atl/.skill-registry.cache.json', '.claude/commands/')
 
     if ($DryRun) {
         Write-Info '[dry-run] Would ensure .gitignore contains LDD entries'

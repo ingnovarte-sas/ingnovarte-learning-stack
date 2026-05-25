@@ -3,3 +3,4 @@ cursos/
 gentle-ai/
 .atl/skill-registry.md
 .atl/.skill-registry.cache.json
+.claude/commands/
