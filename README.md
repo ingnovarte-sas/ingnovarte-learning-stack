@@ -17,7 +17,7 @@ El Ingnovarte Learning Stack es un conjunto de instrucciones y herramientas para
 
 ```bash
 # 1. Clona el repositorio
-git clone https://github.com/ingnovarte/ingnovarte-learning-stack.git ingnovarte-learning-stack
+git clone https://github.com/ingnovarte-sas/ingnovarte-learning-stack.git ingnovarte-learning-stack
 cd ingnovarte-learning-stack
 
 # 2. Ejecuta el installer
