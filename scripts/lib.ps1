@@ -103,7 +103,7 @@ function Add-JsonKey {
     }
 
     try {
-        $raw = Get-Content -Raw -Path $Path
+        $raw = Get-Content -Raw -Path $Path -Encoding UTF8
         # ConvertFrom-Json returns PSCustomObject; work with it as a hashtable
         $obj = $raw | ConvertFrom-Json
         $segments = $KeyPath -split '\.'
@@ -146,7 +146,7 @@ function ConvertTo-Hashtable {
     if ($null -eq $InputObject) { return $null }
 
     if ($InputObject -is [System.Management.Automation.PSCustomObject]) {
-        $ht = [ordered]@{}
+        $ht = @{}
         foreach ($prop in $InputObject.PSObject.Properties) {
             $ht[$prop.Name] = ConvertTo-Hashtable $prop.Value
         }
