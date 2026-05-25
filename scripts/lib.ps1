@@ -137,6 +137,47 @@ function Add-JsonKey {
     }
 }
 
+# Set-JsonKey -Path <file> -KeyPath <dotted-key> -Value <hashtable or PSObject>
+# Sets or replaces Value at the nested key path. Creates file and parents if missing.
+function Set-JsonKey {
+    param(
+        [string]$Path,
+        [string]$KeyPath,
+        [hashtable]$Value
+    )
+
+    if (-not (Test-Path $Path)) {
+        '{}' | Set-Content -Path $Path -Encoding UTF8
+    }
+
+    try {
+        $raw = Get-Content -Raw -Path $Path -Encoding UTF8
+        $obj = $raw | ConvertFrom-Json
+        $segments = $KeyPath -split '\.'
+        $root = ConvertTo-Hashtable $obj
+
+        $node = $root
+        for ($i = 0; $i -lt ($segments.Length - 1); $i++) {
+            $seg = $segments[$i]
+            if (-not $node.ContainsKey($seg)) {
+                $node[$seg] = @{}
+            } elseif ($node[$seg] -isnot [hashtable]) {
+                $node[$seg] = ConvertTo-Hashtable $node[$seg]
+            }
+            $node = $node[$seg]
+        }
+
+        $lastKey = $segments[-1]
+        $node[$lastKey] = $Value
+
+        $root | ConvertTo-Json -Depth 10 | Set-Content -Path $Path -Encoding UTF8
+        Write-Ok "Set JSON key '$KeyPath' in '$Path'"
+    } catch {
+        Write-StepError "Failed to set JSON key '$KeyPath' in '$Path': $_"
+        throw
+    }
+}
+
 # ConvertTo-Hashtable <PSCustomObject>
 # Recursively converts a PSCustomObject (from ConvertFrom-Json) to a hashtable.
 # This enables in-place mutation without losing nested structure.
