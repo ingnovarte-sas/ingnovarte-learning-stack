@@ -94,7 +94,7 @@ function Invoke-Detect {
     $mcpFile = Join-Path $RepoRoot '.mcp.json'
     $gentleAiDir = Join-Path $RepoRoot 'gentle-ai'
     if ((Test-Path $gentleAiDir) -or
-        (Test-Path $mcpFile -and (Test-JsonKey -Path $mcpFile -KeyPath 'mcpServers.gentle-ai'))) {
+        ((Test-Path $mcpFile) -and (Test-JsonKey -Path $mcpFile -KeyPath 'mcpServers.gentle-ai'))) {
         $Script:GentleAiPresent = $true
         Write-Info '  Gentle AI:    detected (installer will preserve its config)'
     }
