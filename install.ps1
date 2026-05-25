@@ -1,4 +1,4 @@
-# install.ps1 — Ingnovarte Learning Stack installer (Windows / PowerShell)
+# install.ps1 - Ingnovarte Learning Stack installer (Windows / PowerShell)
 #
 # Sets up Claude Code and/or OpenCode to work with the LDD skill stack.
 # Safe to re-run: all actions are idempotent (second run produces only [skip]).
@@ -18,7 +18,8 @@
 [CmdletBinding()]
 param(
     [switch]$DryRun,
-    [string]$Host   = 'auto',
+    [Alias('Host')]
+    [string]$HostMode = 'auto',
     [switch]$Force,
     [switch]$Quiet
 )
@@ -109,7 +110,7 @@ $ConfigureClaude    = $false
 $ConfigureOpenCode  = $false
 
 function Resolve-Hosts {
-    switch ($Host) {
+    switch ($HostMode) {
         'auto' {
             if ($Script:ClaudePresent)   { $Script:ConfigureClaude   = $true }
             if ($Script:OpenCodePresent) { $Script:ConfigureOpenCode = $true }
@@ -121,7 +122,7 @@ function Resolve-Hosts {
             $Script:ConfigureOpenCode = $true
         }
         default {
-            Write-Warn "Unknown -Host value '$Host'; defaulting to auto"
+            Write-Warn "Unknown -Host value '$HostMode'; defaulting to auto"
             if ($Script:ClaudePresent)   { $Script:ConfigureClaude   = $true }
             if ($Script:OpenCodePresent) { $Script:ConfigureOpenCode = $true }
         }
@@ -158,7 +159,7 @@ function Invoke-RegenerateRegistry {
 function Invoke-MergeMcpClaude {
     if (-not $Script:ConfigureClaude) { return }
     if (-not $Script:EngramInstalled) {
-        Write-Warn 'Engram not installed — skipping .mcp.json merge'
+        Write-Warn 'Engram not installed - skipping .mcp.json merge'
         $Script:CountWarn++
         return
     }
@@ -198,7 +199,7 @@ function Invoke-MergeMcpClaude {
 function Invoke-MergeMcpOpenCode {
     if (-not $Script:ConfigureOpenCode) { return }
     if (-not $Script:EngramInstalled) {
-        Write-Warn 'Engram not installed — skipping opencode.json merge'
+        Write-Warn 'Engram not installed - skipping opencode.json merge'
         $Script:CountWarn++
         return
     }
@@ -269,7 +270,7 @@ function Invoke-AppendGitignore {
     }
 
     # Append section
-    $appendLines = @('', "$sectionMarker — generated/local files") + $missing
+    $appendLines = @('', "$sectionMarker - generated/local files") + $missing
     Add-Content -Path $gitignore -Value $appendLines -Encoding UTF8
     Write-Ok "Appended $($missing.Count) entries to .gitignore"
     $Script:CountOk++
@@ -308,7 +309,7 @@ function Write-Summary {
     }
 
     if ($DryRun) {
-        Write-Info 'Dry run complete — no changes were made.'
+        Write-Info 'Dry run complete - no changes were made.'
     } else {
         Write-Info 'Installation complete.'
         Write-Info ''
