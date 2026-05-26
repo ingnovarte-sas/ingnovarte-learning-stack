@@ -358,7 +358,8 @@ function Invoke-WriteClaudeCommands {
     if (-not $Script:ConfigureClaude) { return }
 
     $commands = Get-LddCommandDefinitions
-    $commandsDir = Join-Path $RepoRoot '.claude\commands'
+    # Write to ~/.claude/commands so commands are available globally, not just in this repo
+    $commandsDir = Join-Path $env:USERPROFILE '.claude\commands'
 
     if ($DryRun) {
         Write-Info "[dry-run] Would write $($commands.Count) Claude Code slash command file(s) to $commandsDir"
