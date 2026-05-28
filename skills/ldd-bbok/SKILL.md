@@ -9,10 +9,27 @@ triggers:
   - body of knowledge borrador
   - redactar contenido por tópico
 metadata:
-  version: "1.0"
+  version: "2.0"
   author: "ingnovarte"
-  updated_at: "2026-05-25"
+  updated_at: "2026-05-28"
 license: "proprietary"
+---
+
+## Modo de ejecución
+
+Esta skill genera el BBOK completo más la tabla de segmentación con IDs únicos. Para proteger el contexto del orquestador:
+
+**Esta skill DEBE ejecutarse como sub-agente. No ejecutar inline.**
+
+Prompt mínimo para el sub-agente:
+> Ejecuta la skill `ldd-bbok` para el curso [código].
+> Lee el SKILL.md completo antes de comenzar: `skills/ldd-bbok/SKILL.md`
+> Lee la Ficha Técnica desde Engram: `ldd/{código}/ficha`
+> Lee documentación técnica disponible en la carpeta del curso.
+> Genera el BBOK completo Y la tabla BBOK_segmentado con IDs T{N}-{num}.
+> Guarda: `ldd/{código}/bbok` (texto completo) y `ldd/{código}/bbok-segmentado` (tabla de IDs).
+> Actualiza el plan en: `07_Planeación/plan-gestion.md`
+
 ---
 
 ## When to Use
@@ -35,9 +52,15 @@ No uses esta skill para:
    - Conceptos clave con definiciones
    - Contenido técnico organizado (procedimientos, clasificaciones, criterios)
    - Conexión con las actividades clave del puesto de trabajo
-4. **Respetar las restricciones** de la Ficha: no profundizar más allá de lo que los criterios de desempeño exigen
-5. **Marcar supuestos técnicos** que requieran validación con el SME
-6. **Guardar en Engram**: `topic_key: ldd/{código}/bbok`
+4. **Segmentar el BBOK en unidades atómicas** — por cada tópico, descomponer el contenido generado en unidades mínimas de conocimiento y asignar un ID único a cada una:
+   - Formato de ID: `T{N}-{num}` donde N = número de tópico (1, 2, 3…), num = secuencial de 3 dígitos (001, 002…)
+   - Una unidad = una idea técnica atómica: un principio, una regla, una relación causa-efecto, un dato operacional
+   - Prioridad: `Crítica` (sin esto el participante no puede desempeñarse) · `Alta` (enriquece la comprensión) · `Media` (contexto o complemento)
+   - Función instruccional: `definir` · `explicar mecanismo` · `aplicar criterio` · `comparar` · `advertir riesgo` · `procedimiento`
+   - El resultado es la tabla `BBOK_segmentado` (ver formato en Outputs)
+5. **Respetar las restricciones** de la Ficha: no profundizar más allá de lo que los criterios de desempeño exigen
+6. **Marcar supuestos técnicos** que requieran validación con el SME
+7. **Guardar en Engram**: topic_keys `ldd/{código}/bbok` (texto completo del borrador) y `ldd/{código}/bbok-segmentado` (tabla de IDs)
 
 ## Outputs
 
@@ -77,6 +100,27 @@ No uses esta skill para:
 [misma estructura]
 ```
 
+### BBOK Segmentado — tabla de trazabilidad
+
+```markdown
+# BBOK Segmentado — [Código] [Nombre del curso]
+**Versión:** v1 | **Fecha:** | **Total IDs:** [N] ([X] Críticos · [Y] Altos · [Z] Medios)
+
+| ID | Subtema | Unidad BBOK | Idea técnica | Prioridad | Función instruccional |
+|---|---|---|---|---|---|
+| T1-001 | 1.1 | [nombre de la sección ### del BBOK] | [una frase: la idea atómica] | Crítica | definir |
+| T1-002 | 1.1 | [mismo subtema si el bloque tiene más ideas] | [siguiente idea atómica] | Alta | explicar mecanismo |
+| T2-001 | 2.1 | [sección del tópico 2] | [idea atómica] | Crítica | aplicar criterio |
+...
+```
+
+**Reglas de la tabla:**
+- Una fila = una idea técnica que puede enseñarse de forma independiente
+- Los IDs son correlativos y sin saltos dentro de cada tópico
+- La columna «Subtema» usa el código del subtema de la Ficha Técnica (ej: 3.1, 3.2)
+- «Unidad BBOK» es el nombre de la sección `###` del BBOK que contiene la idea
+- «Idea técnica» es una sola frase activa en presente: «La malla de subestación cumple una función distinta»
+
 ## Limits
 
 - Los tópicos del BBOK deben coincidir exactamente con los tópicos de la Ficha Técnica
@@ -84,6 +128,9 @@ No uses esta skill para:
 - El BBOK es un borrador: no es el documento final que el estudiante recibe
 - La profundidad del contenido debe alinearse con la duración del tópico en la ficha (un tópico de 15 min no necesita el mismo detalle que uno de 120 min)
 - No incluir actividades pedagógicas en el BBOK — esas van en la Lluvia de Ideas
+- **IDs correlativos y sin saltos**: los IDs se asignan en orden de aparición en el BBOK; ningún ID puede omitirse ni reutilizarse
+- **Prioridad «Crítica» sin excepción**: todo concepto del que depende directamente el desempeño en el puesto debe marcarse Crítica — si hay duda entre Crítica y Alta, elegir Crítica
+- **Una idea por ID**: si un párrafo contiene más de una idea atómica, segmentar en múltiples IDs consecutivos; no agrupar ideas distintas en un solo ID
 
 ## Plan Update
 

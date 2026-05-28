@@ -12,7 +12,7 @@ triggers:
   - brief diseño gráfico
   - contenido para diseño gráfico
 metadata:
-  version: "3.3"
+  version: "3.4"
   author: "ingnovarte"
   updated_at: "2026-05-26"
 license: "proprietary"
@@ -201,6 +201,17 @@ Una vez definido el total de slides de contenido, distribuir el tiempo del Esque
 El campo **Resumen del slide** contiene 3–5 conceptos clave del BBOK separados por ` · `, que describen de qué trata específicamente esa slide. Para slides estructurales (PORTADA, DIVISOR, ACTIVIDAD) puede ser una frase funcional corta.
 
 Mostrar la arquitectura al usuario y pedir confirmación antes de generar todos los briefs.
+
+**Paso E — Verificar cobertura BBOK crítica (si existe bbok-segmentado):**
+
+Si `ldd/{código}/bbok-segmentado` existe en Engram, verificar que todos los IDs con prioridad `Crítica` estén asignados como HUELLA BBOK en al menos una slide CONCEPTO o TÉCNICO de la arquitectura. Reportar en el resumen de arquitectura:
+
+```
+Cobertura BBOK crítica: {N}/{total} IDs críticos cubiertos
+IDs críticos sin slide asignada: [lista — si ninguno, escribir "Cobertura completa ✓"]
+```
+
+Si hay IDs críticos sin cobertura, proponer slides adicionales antes de solicitar confirmación al usuario.
 
 ### 4. Clasificar cada slide por tipo
 
@@ -427,6 +438,9 @@ Una transición visual clara — el participante sabe que empieza una nueva secc
   - [ ] Coherencia: ¿cada elemento visual tiene función informativa? Eliminar decorativos.
   - [ ] Señalización: ¿cada color codifica un significado específico?
 
+**HUELLA BBOK**
+[IDs del BBOK cubiertos por esta slide — ej: T3-001, T3-002. Si no hay bbok-segmentado disponible, omitir este campo.]
+
 **SECUENCIA DE ANIMACIÓN**
 1. [Primer elemento — establece el contexto]
 2. [Segundo elemento — introduce la tensión o el concepto]
@@ -458,6 +472,7 @@ Una transición visual clara — el participante sabe que empieza una nueva secc
   - [norma o estándar si aplica: ISO XXXX, SAE XXX, etc.]
 - Posición de cada dato sobre el diagrama: [especificar con referencia a la geometría del visual]
 - Color coding: [qué colores representan qué función — ej: azul = fluido a presión, rojo = retorno, gris = estructura]
+- HUELLA BBOK: [IDs del BBOK cubiertos por esta slide — ej: T3-014, T3-015. Si no hay bbok-segmentado disponible, omitir.]
 
 **SECUENCIA DE ANIMACIÓN**
 1. [Estado inicial del sistema/componente]
@@ -580,6 +595,7 @@ El participante ve los conceptos clave del tópico/curso conectados — el mapa 
 - **Cursos > 60 slides:** generar por tópico, confirmando con el usuario antes de avanzar al siguiente.
 - **Variedad visual obligatoria.** No repetir el mismo recurso visual más de 2 veces consecutivas. Un tópico con 8+ slides CONCEPTO debe usar al menos 4 recursos distintos del catálogo. Uniformidad visual = falla de diseño.
 - **Dual-coding obligatorio en CONCEPTO.** Antes de finalizar cada BRIEF DISEÑO, verificar los 5 principios: (1) el visual expresa algo que el texto solo no puede; (2) el tipo de diagrama refleja la organización cognitiva del concepto (causal/secuencial/jerárquico/espacial/comparativo); (3) los labels van sobre el diagrama, nunca en leyenda; (4) sin elementos decorativos — todo aporta información; (5) los colores codifican significado, no estética.
+- **Huella BBOK obligatoria cuando existe bbok-segmentado.** Si el Engram del curso contiene `ldd/{código}/bbok-segmentado`, cada slide CONCEPTO y TÉCNICO debe declarar su HUELLA BBOK. Un slide sin Huella en ese contexto es un error de trazabilidad, no un campo opcional. Los slides estructurales (PORTADA, AGENDA, DIVISOR, ACTIVIDAD, CIERRE) están exentos.
 
 ---
 
