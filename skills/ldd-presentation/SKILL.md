@@ -12,7 +12,7 @@ triggers:
   - montar la presentacion
   - armar el pptx
 metadata:
-  version: "1.0"
+  version: "1.1"
   author: "ingnovarte"
   updated_at: "2026-05-28"
 license: "proprietary"
@@ -64,6 +64,7 @@ Verificar antes de ejecutar:
 
 - Leer storyboard: `mem_search("ldd/{código}/storyboard")` → `mem_get_observation(id)`
 - Leer tema visual: `mem_search("ldd/{código}/tema-visual")` → si no existe, usar paleta por defecto
+- Leer manifiesto de imágenes BBOK: `mem_search("ldd/{código}/bbok-images")` → si existe, construir índice `{ id_bbok: ruta_imagen }` y `{ seccion_bbok: ruta_imagen }` para lookup rápido
 - Determinar `{carpeta}` del curso desde el path del storyboard o preguntando al usuario
 
 ### 2. Parsear el storyboard
@@ -81,6 +82,7 @@ Extraer de cada sección `### Slide [N] — [TIPO] — [Título]`:
 | `descripcion_visual` | valor de `- Descripción visual:` (40–60 palabras) |
 | `punto_atencion` | valor de `- Punto de atención:` |
 | `paleta_slide` | valor de `- Paleta:` |
+| `imagen_bbok` | valor de `- Imagen BBOK:` en BRIEF DISEÑO (ruta relativa o `N/A`) |
 | `huella_bbok` | texto bajo `**HUELLA BBOK**` (puede ser vacío) |
 | `nota_facilitador` | texto bajo `**NOTA FACILITADOR**` |
 
@@ -108,12 +110,23 @@ folder_id    = "017L4IGJP54PUFCV2WOVAIZECMDSL22J3Y"
 
 Para cada slide con `tipo` en {PORTADA, DIVISOR, CONCEPTO, TÉCNICO, EJEMPLO}:
 
-**Algoritmo de matching:**
+**Orden de prioridad (aplicar en este orden — detenerse al primer match):**
+
+**Prioridad 1 — Imagen BBOK** (el SME ya validó este visual):
+1. Leer campo `imagen_bbok` del slide_data (extraído del storyboard)
+2. Si tiene valor (no es `N/A` ni vacío): resolver ruta absoluta = `{carpeta_curso}/{imagen_bbok}`
+3. Si el archivo existe en disco: `img_path = ruta_absoluta` → usar directamente, **sin descargar nada**
+4. Si la ruta no existe en disco: intentar reconstruir desde el índice Engram `bbok-images`
+
+**Prioridad 2 — SharePoint multimedia** (foto contextual cuando no hay imagen BBOK):
 1. Extraer keywords del campo `descripcion_visual`: sustantivos técnicos y operativos (ignorar artículos, preposiciones, verbos comunes)
-2. Para cada archivo en el índice: `score = suma de keywords que aparecen en nombre_archivo.lower()`
+2. Para cada archivo en el índice SharePoint: `score = suma de keywords que aparecen en nombre_archivo.lower()`
 3. Elegir el archivo con mayor score (empate: primero en orden alfabético)
-4. Si `score == 0` o índice vacío: `img_path = None` (se usará placeholder de color sólido)
-5. Si `score > 0`: descargar con `mcp__ms365-work__download-bytes` → guardar en `C:/Temp/ldd-pres-{código}/img_{num}.jpg`
+4. Si `score > 0`: descargar con `mcp__ms365-work__download-bytes` → guardar en `C:/Temp/ldd-pres-{código}/img_{num}.jpg`
+
+**Prioridad 3 — Placeholder** (último recurso):
+- Si `score == 0` o índice SharePoint vacío: `img_path = None` (rectángulo de color sólido del tema)
+- Agregar al reporte final: `[PENDIENTE: imagen para slide {num} — {titulo}]`
 
 ### 5. Resolver íconos (opcional)
 
@@ -494,6 +507,8 @@ Si el tema visual existe, reemplazar estos valores con los del Engram antes de g
 - **No inventar contenido**: todo texto en los slides viene del storyboard parseado — el sub-agente no redacta ni resume
 - Máximo 3 elementos de texto por slide (regla heredada del storyboard)
 - Si la lista de SharePoint retorna más de 200 archivos, paginar con `$top=200&$skipToken=...`
+- **Las imágenes del BBOK tienen prioridad absoluta** sobre SharePoint — son el contenido técnico validado por el SME. No reemplazarlas con fotos genéricas aunque el score de SharePoint sea alto.
+- Si una imagen BBOK es un diagrama técnico (.png con fondo blanco), considerar agregar una capa semitransparente oscura detrás del texto para mantener legibilidad
 
 ---
 

@@ -13,7 +13,7 @@ triggers:
   - brief para diseño
   - brief diseño gráfico
 metadata:
-  version: "3.4"
+  version: "3.5"
   author: "ingnovarte"
   updated_at: "2026-05-26"
 license: "proprietary"
@@ -145,6 +145,7 @@ Cada slide CONCEPTO debe satisfacer los 5 principios antes de finalizar el BRIEF
 Buscar en Engram:
 - `ldd/{código}/bbok` — si no existe, detener y pedir al usuario ejecutar `ldd-bbok` primero
 - `ldd/{código}/esquema` — si no existe, detener y pedir al usuario ejecutar `ldd-esquema` primero
+- `ldd/{código}/bbok-images` — opcional; si existe, cargar el manifiesto para referenciar imágenes técnicas del BBOK en los briefs de diseño
 
 ### 2. Verificar o proponer el tema visual
 
@@ -426,6 +427,7 @@ Una transición visual clara — el participante sabe que empieza una nueva secc
 [Una frase: qué hace ver/sentir esta slide al participante. No qué explica — qué muestra.]
 
 **BRIEF DISEÑO**
+- Imagen BBOK: [ruta relativa si el BBOK fuente tiene una imagen para esta sección — ej: `02_Esquema/bbok-images/media/image3.png`. Si no hay imagen BBOK, escribir `N/A`. Cuando existe, usarla como referencia visual base o como imagen del slide.]
 - Recurso visual: [código del catálogo — foto-contextual | video-en-monitor | galería-netflix | sección-transversal | animación-de-trayecto | mapa-de-zona | dato-prominente | panel-de-instrumento | diagrama-esquemático | antes-después]
 - Disposición del texto: [label-visual | lista-enumerada | comparativo | flujo-animado | libre]
 - Descripción visual: [40–60 palabras. Incluir: qué elemento domina el espacio visual, qué color/forma/posición define el layout, qué jerarquía visual tiene el texto, qué emoción o estado mental transmite al participante. Ejemplo válido: "Primer plano de un panel de control con indicadores en rojo. Operador de espaldas en el tercio izquierdo, creando tensión. Etiquetas técnicas en tipografía blanca flotan sobre los indicadores en el tercio derecho, sobre fondo oscuro." — "imagen industrial técnica" NO es válido.]
@@ -466,7 +468,8 @@ Una transición visual clara — el participante sabe que empieza una nueva secc
 [Qué entiende el participante al ver esta animación o diagrama — la función, el flujo, el principio físico.]
 
 **BRIEF DISEÑO**
-- Diagrama/animación: [descripción precisa del componente o proceso — geometría, partes, colores por función]
+- Imagen BBOK: [ruta relativa si el BBOK fuente tiene un diagrama o imagen para esta sección — ej: `02_Esquema/bbok-images/media/image5.png`. Si existe, es el diagrama técnico validado por el SME y debe usarse como base o reemplazar la descripción del diagrama.]
+- Diagrama/animación: [descripción precisa del componente o proceso — geometría, partes, colores por función. Si existe Imagen BBOK, describir cómo complementar o animar ESA imagen específica.]
 - Datos técnicos a incluir verbatim del BBOK:
   - [valor 1: nombre + cifra + unidad tal como aparece en el BBOK]
   - [valor 2: ...]
