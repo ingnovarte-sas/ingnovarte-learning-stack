@@ -56,6 +56,7 @@ $Script:CountError = 0
 $ClaudePresent    = $false
 $OpenCodePresent  = $false
 $EngramInstalled  = $false
+$NodePresent      = $false
 $GentleAiPresent  = $false
 
 function Invoke-Detect {
@@ -88,6 +89,15 @@ function Invoke-Detect {
         Write-Info "  Engram:       found ($($engramCmd.Source))"
     } else {
         Write-Info '  Engram:       not found'
+    }
+
+    # Node.js / npx (required for ms365-work)
+    $npxCmd = Get-Command npx -ErrorAction SilentlyContinue
+    if ($null -ne $npxCmd) {
+        $Script:NodePresent = $true
+        Write-Info "  Node.js/npx:  found ($($npxCmd.Source))"
+    } else {
+        Write-Info '  Node.js/npx:  not found (ms365-work will be skipped)'
     }
 
     # Gentle AI (informative only)
@@ -149,6 +159,80 @@ function Invoke-RegenerateRegistry {
     }
 
     & $registryScript -RepoRoot $RepoRoot
+    $Script:CountOk++
+}
+
+# ---------------------------------------------------------------------------
+# Action: merge ms365-work into .mcp.json (Claude Code)
+# ---------------------------------------------------------------------------
+
+function Invoke-MergeMs365Claude {
+    if (-not $Script:ConfigureClaude) { return }
+    if (-not $Script:NodePresent) {
+        Write-Warn 'Node.js/npx not found - skipping ms365-work in .mcp.json (install Node.js 18+ and re-run)'
+        Write-Warn '  See skills/_shared/ms365-setup.md for manual setup instructions.'
+        $Script:CountWarn++
+        return
+    }
+
+    $mcpFile = Join-Path $RepoRoot '.mcp.json'
+    $ms365Value = [ordered]@{
+        command = 'npx'
+        args    = @('-y', '@softeria/ms-365-mcp-server', '--org-mode')
+    }
+
+    if ($DryRun) {
+        if (Test-JsonKey -Path $mcpFile -KeyPath 'mcpServers.ms365-work') {
+            Write-Info '[dry-run] .mcp.json: ms365-work key already present (would skip)'
+        } else {
+            Write-Info '[dry-run] Would add ms365-work to .mcp.json'
+        }
+        $Script:CountSkip++
+        return
+    }
+
+    if (Test-Path $mcpFile) {
+        if (-not (Test-JsonKey -Path $mcpFile -KeyPath 'mcpServers')) {
+            Add-JsonKey -Path $mcpFile -KeyPath 'mcpServers' -Value @{}
+        }
+    }
+    Add-JsonKey -Path $mcpFile -KeyPath 'mcpServers.ms365-work' -Value $ms365Value
+    $Script:CountOk++
+}
+
+# ---------------------------------------------------------------------------
+# Action: merge ms365-work into opencode.json (OpenCode)
+# ---------------------------------------------------------------------------
+
+function Invoke-MergeMs365OpenCode {
+    if (-not $Script:ConfigureOpenCode) { return }
+    if (-not $Script:NodePresent) {
+        Write-Warn 'Node.js/npx not found - skipping ms365-work in opencode.json (install Node.js 18+ and re-run)'
+        $Script:CountWarn++
+        return
+    }
+
+    $ocFile = Get-OpenCodeConfigPath
+    $ocDir = Split-Path $ocFile -Parent
+    if (-not (Test-Path $ocDir)) { New-Item -ItemType Directory -Path $ocDir -Force | Out-Null }
+
+    $ms365Value = [ordered]@{
+        type    = 'local'
+        command = @('npx', '-y', '@softeria/ms-365-mcp-server', '--org-mode')
+    }
+
+    if ($DryRun) {
+        Write-Info "[dry-run] Would add ms365-work to $ocFile"
+        $Script:CountSkip++
+        return
+    }
+
+    if (Test-Path $ocFile) {
+        if (-not (Test-JsonKey -Path $ocFile -KeyPath 'mcp')) {
+            Add-JsonKey -Path $ocFile -KeyPath 'mcp' -Value @{}
+        }
+    }
+    Add-JsonKey -Path $ocFile -KeyPath 'mcp.ms365-work' -Value $ms365Value
     $Script:CountOk++
 }
 
@@ -438,6 +522,8 @@ function Invoke-Apply {
     Invoke-RegenerateRegistry
     Invoke-MergeMcpClaude
     Invoke-MergeMcpOpenCode
+    Invoke-MergeMs365Claude
+    Invoke-MergeMs365OpenCode
     Invoke-MergeOpenCodeCommands
     Invoke-WriteClaudeCommands
     Invoke-AppendGitignore
@@ -471,6 +557,12 @@ function Write-Summary {
         Write-Info '  1. Open Claude Code or OpenCode in this directory.'
         Write-Info '  2. Type: ejecuta ldd-onboard'
         Write-Info '  3. The skill will verify your setup end-to-end.'
+        Write-Info ''
+        Write-Info 'Microsoft 365 (required for ldd-presentation):'
+        Write-Info '  The first time the agent calls ms365-work it will prompt for'
+        Write-Info '  a device code. Open https://microsoft.com/devicelogin and'
+        Write-Info '  enter the code shown. Sign in with your org account.'
+        Write-Info '  See skills/_shared/ms365-setup.md for details.'
         Write-Info ''
         Write-Info 'To initialize your first course:'
         Write-Info '  Create a course folder under cursos\ and run ldd-init.'

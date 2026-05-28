@@ -10,6 +10,7 @@ El Ingnovarte Learning Stack es un conjunto de instrucciones y herramientas para
 - **[Engram](https://engram.fyi)** — recomendado para memoria persistente entre sesiones; el stack funciona sin él pero el agente no recuerda el estado de los cursos al cerrar y reabrir
 - **Git**
 - **bash** (macOS / Linux) o **PowerShell 5+** (Windows)
+- **Node.js 18+** — requerido solo para `ldd-presentation` (generación del .pptx con acceso a imágenes en SharePoint); el resto del pipeline funciona sin él
 
 ---
 
@@ -31,7 +32,7 @@ cd ingnovarte-learning-stack
 #    ejecuta ldd-onboard
 ```
 
-El installer detecta tu entorno automáticamente (Claude Code, OpenCode, o ambos), configura Engram como servidor MCP y genera el índice de skills. Es idempotente — ejecutarlo más de una vez es seguro.
+El installer detecta tu entorno automáticamente (Claude Code, OpenCode, o ambos), configura Engram y ms365-work como servidores MCP, y genera el índice de skills. Es idempotente — ejecutarlo más de una vez es seguro.
 
 ---
 
@@ -88,6 +89,20 @@ Solución: vuelve a ejecutar el installer, que regenera el registry escaneando l
 .\install.ps1
 ```
 
+### ms365-work no responde / imágenes de SharePoint no cargan
+
+`ldd-presentation` usa el MCP `ms365-work` para acceder a la carpeta multimedia de Ingnovarte en SharePoint. Si falla, el .pptx se genera con placeholders de color en lugar de imágenes.
+
+**Causas comunes:**
+
+1. **Node.js no instalado** — `ms365-work` corre vía `npx`. Instala Node.js 18+ desde [nodejs.org](https://nodejs.org) y vuelve a correr el installer.
+
+2. **ms365-work no está en la config MCP** — El installer lo agrega automáticamente si detecta Node.js. Si no lo hizo, agrega la entrada manualmente siguiendo `skills/_shared/ms365-setup.md`.
+
+3. **Sesión de Microsoft expirada** — El token dura aprox. 90 días. Cuando expire, el agente mostrará un código de dispositivo. Ve a `https://microsoft.com/devicelogin`, ingresa el código y vuelve a iniciar sesión con tu cuenta org.
+
+Ver instrucciones completas en `skills/_shared/ms365-setup.md`.
+
 ### Coexistencia con Gentle AI
 
 Si tienes Gentle AI instalado, no hay conflicto. El installer detecta Gentle AI al revisar los archivos de configuración MCP y hace **merge** — agrega la entrada de Engram sin tocar las entradas existentes de Gentle AI ni de otras herramientas.
@@ -131,6 +146,7 @@ ingnovarte-learning-stack/
 │       ├── orchestrator-rules.md    # Reglas de orquestación (fuente única)
 │       ├── engram-convention.md     # Convenciones de Engram para LDD
 │       ├── engram-setup.md          # Instrucciones de instalación de Engram
+│       ├── ms365-setup.md           # Configuración y autenticación de ms365-work
 │       ├── skill-resolver.md        # Protocolo de resolución de skills
 │       └── skill-registry.header.md # Plantilla del encabezado del registry
 ├── scripts/                   # Scripts del installer

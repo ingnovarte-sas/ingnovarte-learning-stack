@@ -34,6 +34,20 @@ Prompt mínimo para el sub-agente:
 
 ---
 
+## Prerequisitos de entorno
+
+Esta skill accede a SharePoint vía el MCP `ms365-work`. Antes de ejecutarla:
+
+1. Verifica que `ms365-work` esté configurado en tu MCP (Claude Code: `.mcp.json` / OpenCode: `opencode.json`).
+   El installer lo configura automáticamente si Node.js 18+ está instalado.
+2. Si es la primera vez, el servidor mostrará un código de dispositivo para autenticarte con tu cuenta org de Microsoft.
+3. Ver instrucciones completas en `skills/_shared/ms365-setup.md`.
+
+> Si `ms365-work` no está disponible, la skill continúa y genera el .pptx con placeholders de color.
+> El reporte final lista qué slides quedaron sin imagen.
+
+---
+
 ## Modo de trabajo
 
 Antes de generar ningún slide, preguntar al usuario:

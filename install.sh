@@ -73,6 +73,7 @@ info() {
 CLAUDE_PRESENT=false
 OPENCODE_PRESENT=false
 ENGRAM_INSTALLED=false
+NODE_PRESENT=false
 JQ_AVAILABLE=false
 GENTLE_AI_PRESENT=false
 
@@ -102,6 +103,17 @@ detect() {
     info "  Engram:       found ($(command -v engram))"
   else
     info "  Engram:       not found"
+  fi
+
+  # Node.js / npx (required for ms365-work)
+  if check_command npx; then
+    NODE_PRESENT=true
+    info "  Node.js/npx:  found ($(command -v npx))"
+  elif check_command node; then
+    NODE_PRESENT=true
+    info "  Node.js/npx:  found via node ($(command -v node))"
+  else
+    info "  Node.js/npx:  not found (ms365-work will be skipped)"
   fi
 
   # jq
@@ -184,6 +196,109 @@ action_regenerate_registry() {
   fi
 
   bash "$registry_script" "$REPO_ROOT"
+  record_ok
+}
+
+# ---------------------------------------------------------------------------
+# Action: merge ms365-work into .mcp.json (Claude Code)
+# ---------------------------------------------------------------------------
+
+action_merge_ms365_claude() {
+  if [ "$CONFIGURE_CLAUDE" = false ]; then
+    return
+  fi
+  if [ "$NODE_PRESENT" = false ]; then
+    log_warn "Node.js/npx not found — skipping ms365-work in .mcp.json (install Node.js 18+ and re-run)"
+    log_warn "  See skills/_shared/ms365-setup.md for manual setup instructions."
+    record_warn
+    return
+  fi
+  if [ "$JQ_AVAILABLE" = false ]; then
+    log_warn "jq not available — skipping ms365-work in .mcp.json (install jq and re-run)"
+    record_warn
+    return
+  fi
+
+  local mcp_file="$REPO_ROOT/.mcp.json"
+  local ms365_block
+  ms365_block='{"command":"npx","args":["-y","@softeria/ms-365-mcp-server","--org-mode"]}'
+
+  if [ "$DRY_RUN" = true ]; then
+    if json_has_key "$mcp_file" '.mcpServers["ms365-work"]' 2>/dev/null; then
+      info "[dry-run] .mcp.json: ms365-work key already present (would skip)"
+    else
+      info "[dry-run] Would add ms365-work to .mcp.json"
+    fi
+    record_skip
+    return
+  fi
+
+  json_add_key "$mcp_file" '.mcpServers["ms365-work"]' "$ms365_block"
+  record_ok
+}
+
+# ---------------------------------------------------------------------------
+# Action: merge ms365-work into opencode.json (OpenCode)
+# ---------------------------------------------------------------------------
+
+action_merge_ms365_opencode() {
+  if [ "$CONFIGURE_OPENCODE" = false ]; then
+    return
+  fi
+  if [ "$NODE_PRESENT" = false ]; then
+    log_warn "Node.js/npx not found — skipping ms365-work in opencode.json (install Node.js 18+ and re-run)"
+    record_warn
+    return
+  fi
+
+  local opencode_file=""
+  if [ -f "$HOME/.config/opencode/opencode.json" ]; then
+    opencode_file="$HOME/.config/opencode/opencode.json"
+  elif [ -f "$HOME/.local/share/opencode/opencode.json" ]; then
+    opencode_file="$HOME/.local/share/opencode/opencode.json"
+  else
+    opencode_file="$HOME/.config/opencode/opencode.json"
+    mkdir -p "$(dirname "$opencode_file")"
+  fi
+
+  local ms365_block
+  ms365_block='{"type":"local","command":["npx","-y","@softeria/ms-365-mcp-server","--org-mode"]}'
+
+  if [ "$DRY_RUN" = true ]; then
+    info "[dry-run] Would add ms365-work to $opencode_file"
+    record_skip
+    return
+  fi
+
+  if [ "$JQ_AVAILABLE" = true ]; then
+    json_add_key "$opencode_file" '.mcp["ms365-work"]' "$ms365_block"
+  else
+    if check_command python3; then
+      python3 - "$opencode_file" "$ms365_block" <<'PYEOF'
+import sys, json
+file_path = sys.argv[1]
+block = json.loads(sys.argv[2])
+try:
+    with open(file_path, 'r') as f:
+        obj = json.load(f)
+except Exception:
+    obj = {}
+if 'mcp' not in obj:
+    obj['mcp'] = {}
+if 'ms365-work' not in obj['mcp']:
+    obj['mcp']['ms365-work'] = block
+    with open(file_path, 'w') as f:
+        json.dump(obj, f, indent=2)
+    print('[ok]    Added ms365-work to opencode.json')
+else:
+    print('[skip]  ms365-work already in opencode.json')
+PYEOF
+    else
+      log_warn "Neither jq nor python3 available — cannot merge ms365-work into opencode.json"
+      record_warn
+      return
+    fi
+  fi
   record_ok
 }
 
@@ -349,6 +464,8 @@ apply() {
   action_regenerate_registry
   action_merge_mcp_claude
   action_merge_mcp_opencode
+  action_merge_ms365_claude
+  action_merge_ms365_opencode
   action_append_gitignore
 
   info ""
@@ -381,6 +498,12 @@ print_summary() {
     info "  1. Open Claude Code or OpenCode in this directory."
     info "  2. Type: ejecuta ldd-onboard"
     info "  3. The skill will verify your setup end-to-end."
+    info ""
+    info "Microsoft 365 (required for ldd-presentation):"
+    info "  The first time the agent calls ms365-work it will prompt for"
+    info "  a device code. Open https://microsoft.com/devicelogin and"
+    info "  enter the code shown. Sign in with your org account."
+    info "  See skills/_shared/ms365-setup.md for details."
     info ""
     info "To initialize your first course:"
     info "  Create a course folder under cursos/ and run ldd-init."

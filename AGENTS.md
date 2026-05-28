@@ -29,9 +29,10 @@ Lee el archivo completo `skills/_shared/orchestrator-rules.md` antes de responde
 ## Notas específicas de OpenCode
 
 - **Engram**: accede a la memoria persistente usando el nombre de servidor `engram` configurado en `opencode.json` (bloque `mcp`). Las herramientas se invocan como `engram/mem_save`, `engram/mem_search`, `engram/mem_context`, etc.
+- **ms365-work**: accede a SharePoint para imágenes multimedia (requerido por `ldd-presentation`). Las herramientas se invocan como `ms365-work/list-folder-files`, `ms365-work/download-bytes`. Configurado en `opencode.json` bajo la clave `mcp`. Ver `skills/_shared/ms365-setup.md`.
 - **Sub-agentes**: lanza sub-agentes usando el comando nativo `agent` / `subagent` de OpenCode
 - **Skill registry**: se encuentra en `.atl/skill-registry.md` relativo al root del repositorio
-- **Config MCP**: la configuración del servidor Engram va en `opencode.json` bajo la clave `mcp`
+- **Config MCP**: la configuración de servidores MCP va en `opencode.json` bajo la clave `mcp`
 
 ### Diferencias sintácticas Claude Code vs OpenCode
 
@@ -39,6 +40,7 @@ Lee el archivo completo `skills/_shared/orchestrator-rules.md` antes de responde
 |---|---|---|
 | Entry file | `CLAUDE.md` | `AGENTS.md` |
 | Engram tools | `mcp__plugin_engram_engram__mem_save` | `engram/mem_save` |
+| ms365-work tools | `mcp__ms365-work__list-folder-files` | `ms365-work/list-folder-files` |
 | Sub-agentes | tool `Agent` | comando `agent` / `subagent` |
 | Config MCP | `.mcp.json` o settings | `opencode.json` → bloque `mcp` |
 

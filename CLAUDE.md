@@ -29,6 +29,7 @@ Lee el archivo completo `skills/_shared/orchestrator-rules.md` antes de responde
 ## Notas específicas de Claude Code
 
 - **Engram**: accede a la memoria persistente vía herramientas `mcp__plugin_engram_engram__mem_save`, `mcp__plugin_engram_engram__mem_search`, `mcp__plugin_engram_engram__mem_context`, etc.
+- **ms365-work**: accede a SharePoint para imágenes multimedia (requerido por `ldd-presentation`). Las herramientas se invocan como `mcp__ms365-work__list-folder-files`, `mcp__ms365-work__download-bytes`. Ver `skills/_shared/ms365-setup.md` para configuración y autenticación.
 - **Sub-agentes**: lanza sub-agentes usando la herramienta `Agent` (Task tool de Claude Code)
 - **Skill registry**: se encuentra en `.atl/skill-registry.md` relativo al root del repositorio
 
