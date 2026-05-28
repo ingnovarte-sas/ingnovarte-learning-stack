@@ -62,6 +62,7 @@ Después de cada delegación, verifica el campo `skill_resolution` del resultado
 | ldd-esquema | skills/ldd-esquema/SKILL.md |
 | ldd-bok | skills/ldd-bok/SKILL.md |
 | ldd-storyboard | skills/ldd-storyboard/SKILL.md |
+| ldd-presentation | skills/ldd-presentation/SKILL.md |
 | ldd-guias | skills/ldd-guias/SKILL.md |
 | ldd-evaluaciones | skills/ldd-evaluaciones/SKILL.md |
 | ldd-informe | skills/ldd-informe/SKILL.md |

@@ -120,6 +120,7 @@ ingnovarte-learning-stack/
 │   ├── ldd-esquema/           # Esquema minuto a minuto
 │   ├── ldd-bok/               # BOK final
 │   ├── ldd-storyboard/        # Storyboard slide por slide
+│   ├── ldd-presentation/      # Genera el .pptx desde el storyboard
 │   ├── ldd-guias/             # Guías de Actividades
 │   ├── ldd-evaluaciones/      # Evaluaciones y rúbricas
 │   ├── ldd-informe/           # Informes de retroalimentación y eficacia

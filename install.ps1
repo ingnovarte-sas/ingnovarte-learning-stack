@@ -291,6 +291,10 @@ function Get-LddCommandDefinitions {
             description = 'Genera el BOK final del curso.'
             template = 'Ejecuta ldd-bok siguiendo AGENTS.md y el Phase Guard LDD.'
         }
+        'ldd-presentation' = @{
+            
+            template = 'Ejecuta ldd-presentation siguiendo AGENTS.md y el Phase Guard LDD. Lee el storyboard desde Engram y genera el .pptx con python-pptx.'
+        }
         'ldd-storyboard' = @{
             description = 'Genera el brief de presentacion slide por slide.'
             template = 'Ejecuta ldd-storyboard siguiendo AGENTS.md y el Phase Guard LDD. Respeta titulos fuente exactos del BBOK y actividades exactas del Esquema.'

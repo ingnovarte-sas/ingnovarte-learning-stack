@@ -25,7 +25,7 @@ Aplica este test antes de escribir CUALQUIER respuesta:
 
 ### Skills que SIEMPRE se delegan — sin excepción, sin override
 
-`ldd-init` · `ldd-kickoff` · `ldd-contextualizacion` · `ldd-ficha` · `ldd-bbok` · `ldd-lluvia` · `ldd-esquema` · `ldd-bok` · `ldd-storyboard` · `ldd-guias` · `ldd-evaluaciones` · `ldd-informe` · `ldd-status`
+`ldd-init` · `ldd-kickoff` · `ldd-contextualizacion` · `ldd-ficha` · `ldd-bbok` · `ldd-lluvia` · `ldd-esquema` · `ldd-bok` · `ldd-storyboard` · `ldd-presentation` · `ldd-guias` · `ldd-evaluaciones` · `ldd-informe` · `ldd-status`
 
 Si el orquestador detecta que está generando contenido de alguna de estas skills inline → PARAR, borrar lo escrito, y relanzar como sub-agente.
 
@@ -106,7 +106,7 @@ Antes de responder cualquier solicitud, verifica si hay una skill LDD aplicable:
 
 **Regla principal:** el orquestador NO ejecuta skills LDD inline. Su trabajo es identificar el skill correcto, preparar el contexto del curso, y lanzar el sub-agente. El sub-agente lee el `SKILL.md` y ejecuta.
 
-Skills que siempre se delegan: `ldd-init`, `ldd-kickoff`, `ldd-contextualizacion`, `ldd-ficha`, `ldd-bbok`, `ldd-lluvia`, `ldd-esquema`, `ldd-bok`, `ldd-storyboard`, `ldd-guias`, `ldd-evaluaciones`, `ldd-informe`, `ldd-status`.
+Skills que siempre se delegan: `ldd-init`, `ldd-kickoff`, `ldd-contextualizacion`, `ldd-ficha`, `ldd-bbok`, `ldd-lluvia`, `ldd-esquema`, `ldd-bok`, `ldd-storyboard`, `ldd-presentation`, `ldd-guias`, `ldd-evaluaciones`, `ldd-informe`, `ldd-status`.
 
 Solo `ldd-review` puede ejecutarse inline cuando revisa un artefacto pequeño ya cargado en contexto.
 
@@ -147,6 +147,7 @@ Busca contexto adicional en Engram: mem_search(query: "ldd/{código}", project: 
 |---|---|
 | ldd-init, ldd-kickoff, ldd-ficha, ldd-lluvia, ldd-esquema, ldd-guias, ldd-review, ldd-informe, ldd-status | sonnet |
 | ldd-bbok, ldd-bok, ldd-storyboard, ldd-evaluaciones | opus |
+| ldd-presentation | sonnet | Generación de código + descarga de assets |
 | Consultas rápidas, verificaciones | haiku |
 | default | sonnet |
 
@@ -176,6 +177,7 @@ Antes de delegar o ejecutar CUALQUIER skill LDD, verifica en Engram que existe e
 | ldd-esquema | `ldd/{code}/lluvia` | "Falta la Lluvia de Ideas. ¿Deseas generarla primero con ldd-lluvia?" |
 | ldd-bok | `ldd/{code}/bbok` | "Falta el BBOK. ¿Deseas generarlo primero con ldd-bbok?" |
 | ldd-storyboard | `ldd/{code}/bok` | "Falta el BOK final. ¿Deseas generarlo primero con ldd-bok?" |
+| ldd-presentation | `ldd/{code}/storyboard` | "Falta el storyboard aprobado. ¿Deseas ejecutar ldd-storyboard primero?" |
 | ldd-guias | `ldd/{code}/lluvia` + `ldd/{code}/esquema` | "Faltan la Lluvia de Ideas o el Esquema. ¿Deseas generarlos primero?" |
 | ldd-evaluaciones | `ldd/{code}/ficha` + `ldd/{code}/bbok` | "Faltan la Ficha o el BBOK/BOK. ¿Deseas generarlos primero?" |
 | ldd-informe (retro) | ejecución del entrenamiento confirmada por usuario | "Confirma las fechas y datos del entrenamiento antes de generar el informe." |
@@ -238,6 +240,7 @@ Cuando el usuario trae cualquier input al orquestador, este debe detectar si cor
 | Lluvia de ideas generada (ldd-lluvia) | 16, 17 |
 | BBOK generado (ldd-bbok) | 18, 20, 21 |
 | Storyboard generado (ldd-storyboard) | 23, 24 |
+| Presentación .pptx generada (ldd-presentation) | 30, 31 |
 | Guía de actividades generada (ldd-guias) | 25, 26, 27, 28, 29 |
 | Diseño gráfico entregado | 30, 31 |
 | Evaluaciones generadas (ldd-evaluaciones) | 32, 33 |
