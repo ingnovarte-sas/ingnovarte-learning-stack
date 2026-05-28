@@ -12,7 +12,7 @@ triggers:
   - montar la presentacion
   - armar el pptx
 metadata:
-  version: "1.1"
+  version: "1.2"
   author: "ingnovarte"
   updated_at: "2026-05-28"
 license: "proprietary"
@@ -31,6 +31,47 @@ Prompt mínimo para el sub-agente:
 > Lee el tema visual desde Engram: `ldd/{código}/tema-visual`
 > Genera el .pptx y guárdalo en: `cursos/{carpeta}/03_Creación/presentacion-{código}.pptx`
 > Guarda el path del archivo en Engram: `ldd/{código}/presentation-path`
+
+---
+
+## Modo de trabajo
+
+Antes de generar ningún slide, preguntar al usuario:
+
+> "Esta presentación tiene **[N] tópicos** y **[M] slides** según el storyboard.
+> ¿Cómo quieres que trabaje?
+>
+> **A) Por tópico** *(recomendado)* — genero las slides de un tópico, te reporto qué imágenes encontré y cuáles quedaron como placeholder, y espero tu aprobación antes de continuar.
+> **B) Una pasada** — genero todas las slides de una vez y te entrego el .pptx completo con el reporte final.
+> **C) Otro** — especifica (ej: 'solo portada y divisores primero', 'tópicos 1 al 3 juntos')."
+
+**Default si no responde:** opción A (por tópico — permite resolver imágenes faltantes antes de continuar).
+
+### Validación por unidad de trabajo
+
+Al terminar cada tópico, presentar este reporte **antes de continuar con el siguiente**:
+
+```
+─── Validación — Tópico [N]: [Nombre] ────────────────────────────────
+Slides generadas  : [N]
+Imágenes BBOK     : [N] slides con imagen técnica del BBOK
+Imágenes SharePoint: [N] slides con foto contextual
+Placeholders      : [N] slides sin imagen — lista:
+                    · Slide [X] — [título] (keywords buscadas: [...])
+                    · Slide [Y] — [título] (keywords buscadas: [...])
+Íconos Iconify    : [N]
+
+¿Apruebas este tópico, o quieres ajustar imágenes antes de continuar?
+(Puedes indicar rutas de imágenes específicas para los placeholders)
+──────────────────────────────────────────────────────────────────────
+```
+
+**Criterios de bloqueo** — no continuar al siguiente tópico si:
+- Más del 50% de las slides del tópico son placeholders
+- El usuario quiere asignar imágenes manualmente a los placeholders antes de continuar
+- El usuario detecta que una imagen BBOK no corresponde al contenido del slide
+
+**En modo "Una pasada":** generar todo, guardar el .pptx parcial por tópico en temp, ensamblar al final. Presentar reporte global con lista completa de placeholders.
 
 ---
 

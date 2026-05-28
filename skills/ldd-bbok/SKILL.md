@@ -9,7 +9,7 @@ triggers:
   - body of knowledge borrador
   - redactar contenido por tópico
 metadata:
-  version: "2.1"
+  version: "2.2"
   author: "ingnovarte"
   updated_at: "2026-05-28"
 license: "proprietary"
@@ -29,6 +29,45 @@ Prompt mínimo para el sub-agente:
 > Genera el BBOK completo Y la tabla BBOK_segmentado con IDs T{N}-{num}.
 > Guarda: `ldd/{código}/bbok` (texto completo) y `ldd/{código}/bbok-segmentado` (tabla de IDs).
 > Actualiza el plan en: `07_Planeación/plan-gestion.md`
+
+---
+
+## Modo de trabajo
+
+Antes de generar contenido, preguntar al usuario:
+
+> "Este BBOK tiene **[N] tópicos** según la Ficha Técnica.
+> ¿Cómo quieres que trabaje?
+>
+> **A) Por tópico** *(recomendado)* — genero un tópico a la vez con su segmentación completa y te pido validación antes de continuar.
+> **B) Por subtema** — genero subtema a subtema dentro de cada tópico (más granular, ideal si los tópicos son extensos).
+> **C) Una pasada** — genero todo el BBOK de una vez y te presento el resultado completo al final.
+> **D) Otro** — especifica (ej: 'tópicos 1 y 2 juntos, luego uno a uno')."
+
+**Default si no responde:** opción A (por tópico).
+
+### Validación por unidad de trabajo
+
+Al terminar cada tópico (o subtema, según el modo elegido), presentar este reporte **antes de continuar con el siguiente**:
+
+```
+─── Validación — Tópico [N]: [Nombre] ──────────────────────
+IDs generados     : [total] ([X] Críticos · [Y] Altos · [Z] Medios)
+Imágenes BBOK     : [N] imágenes asociadas a IDs de este tópico
+Supuestos técnicos: [N] marcados — [lista breve o "ninguno"]
+Funciones cubiertas: [definir · explicar mecanismo · aplicar criterio · comparar · advertir riesgo · procedimiento]
+Funciones ausentes : [lista o "ninguna"]
+
+¿Apruebas este tópico o hay ajustes antes de continuar?
+────────────────────────────────────────────────────────────
+```
+
+**Criterios de bloqueo** — no continuar al siguiente tópico si:
+- Hay 0 IDs con prioridad Crítica en un tópico con duración > 15 min
+- Hay supuestos técnicos que el usuario quiere confirmar primero
+- El usuario pide correcciones
+
+**En modo "Una pasada":** no hay pausas intermedias. Presentar el reporte global al final con el resumen por tópico.
 
 ---
 

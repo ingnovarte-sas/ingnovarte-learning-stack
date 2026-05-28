@@ -13,10 +13,51 @@ triggers:
   - brief para diseño
   - brief diseño gráfico
 metadata:
-  version: "3.5"
+  version: "3.6"
   author: "ingnovarte"
   updated_at: "2026-05-26"
 license: "proprietary"
+---
+
+## Modo de trabajo
+
+Antes de generar ningún brief, preguntar al usuario:
+
+> "Este storyboard tiene **[N] tópicos** y aproximadamente **[M] slides** según la arquitectura.
+> ¿Cómo quieres que trabaje?
+>
+> **A) Por tópico** *(recomendado)* — genero la tabla de arquitectura + todos los briefs de un tópico, valido cobertura BBOK y te pido aprobación antes de continuar.
+> **B) Arquitectura primero, briefs después** — genero la tabla completa de todos los tópicos, espero tu aprobación, y luego genero los briefs tópico a tópico.
+> **C) Una pasada** — genero arquitectura y todos los briefs de una vez.
+> **D) Otro** — especifica (ej: 'solo el tópico 3', 'los divisores y portada primero')."
+
+**Default si no responde:** opción B (arquitectura primero — permite corregir estructura antes de escribir 30+ briefs).
+
+### Validación por unidad de trabajo
+
+Al terminar cada tópico, presentar este reporte **antes de continuar con el siguiente**:
+
+```
+─── Validación — Tópico [N]: [Nombre] ──────────────────────────────
+Slides generadas  : [total] (CONCEPTO: X · TÉCNICO: Y · EJEMPLO: Z · ACTIVIDAD: W)
+Cobertura BBOK    : [X]/[total] IDs críticos cubiertos
+IDs sin slide     : [lista o "Cobertura completa ✓"]
+Variedad visual   : [OK / ⚠️ recurso '{código}' aparece N veces consecutivas]
+Dual-coding       : [✓ todos completos / ⚠️ N slides con checklist incompleto]
+Huella BBOK       : [✓ todas declaradas / ⚠️ N slides sin huella]
+
+¿Apruebas este tópico o hay ajustes antes de continuar?
+────────────────────────────────────────────────────────────────────
+```
+
+**Criterios de bloqueo** — no continuar al siguiente tópico si:
+- Hay IDs críticos sin slide asignada (cobertura < 100% en críticos)
+- Hay slides CONCEPTO con checklist dual-coding incompleto
+- El usuario detecta un título que no coincide con el BBOK exacto
+- El usuario pide correcciones de estructura o contenido
+
+**En modo "Una pasada":** presentar el reporte global al final con cobertura total y lista consolidada de observaciones.
+
 ---
 
 ## When to Use
