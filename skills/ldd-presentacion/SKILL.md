@@ -12,9 +12,9 @@ triggers:
   - brief diseño gráfico
   - contenido para diseño gráfico
 metadata:
-  version: "2.0"
+  version: "3.3"
   author: "ingnovarte"
-  updated_at: "2026-05-25"
+  updated_at: "2026-05-26"
 license: "proprietary"
 ---
 
@@ -29,6 +29,26 @@ No uses esta skill para:
 - Generar el contenido técnico del curso (usa `ldd-bok`)
 - Generar guías de actividades (usa `ldd-guias`)
 - Definir la estructura del curso (usa `ldd-esquema`)
+
+---
+
+## Modo de ejecución
+
+Esta skill genera 80–150+ slides (Nivel 4 — 1 slide por párrafo-título del BBOK, máximo 3 bullets × 7 palabras, split automático si el párrafo excede densidad) con múltiples lecturas de Engram y escritura de archivo extenso. Para proteger la ventana de contexto del orquestador:
+
+**Esta skill DEBE ejecutarse como sub-agente. No ejecutar inline.**
+
+El orquestador detecta la invocación de esta skill y lanza un sub-agente (herramienta `Agent` / Task tool) con el siguiente prompt mínimo:
+
+> Ejecuta la skill `ldd-presentacion` para el curso [código].
+> Lee el SKILL.md completo antes de comenzar: `skills/ldd-presentacion/SKILL.md`
+> Lee BBOK desde Engram: `ldd/{código}/bbok`
+> Lee Esquema desde Engram: `ldd/{código}/esquema`
+> Genera por tópico. Guarda el archivo en: `cursos/{carpeta}/03_Creación/borrador-presentacion.md`
+> Confirma con el usuario antes de avanzar al siguiente tópico.
+> Si hay datos de BBOK que no encuentres en Engram, léelos directamente desde `cursos/{carpeta}/02_Esquema/`.
+
+El sub-agente ejecuta todos los pasos de esta skill. El orquestador espera el resultado del sub-agente y lo reporta al usuario sin generar contenido inline.
 
 ---
 
@@ -53,6 +73,67 @@ No uses esta skill para:
 - Las actividades prácticas del Esquema minuto a minuto son obligatorias en la arquitectura. Si no existen en el BBOK, usar exactamente el título del Esquema y marcarlas como fuente `Esquema` en la observación de trazabilidad.
 - No omitir actividades prácticas (`P`) del Esquema bajo el argumento de que no son contenido BBOK. Deben aparecer como slides tipo `EJEMPLO` o `ACTIVIDAD` según corresponda.
 - Si una slide no tiene fuente directa en el BBOK ni corresponde a una actividad práctica explícita del Esquema, detenerse y pedir confirmación al usuario antes de incluirla. No inventar slides no trazadas.
+- **TEXTO EN PANTALLA = términos técnicos exactos del BBOK, fraseados de forma directa y natural.** Los términos técnicos, nombres de normas (IEEE, RETIE, ANSI), valores numéricos y fórmulas se toman exactamente del BBOK. La estructura de la frase puede adaptarse para que sea directa y natural — no un fragmento de párrafo arrancado de contexto. **Test de validez:** ¿Suena como algo que diría un técnico experto hablando con su par? Sí → válido. ¿Suena como una línea de manual copiada? → reformular la estructura manteniendo los términos técnicos exactos. Prohibido: inventar términos que no aparecen en el BBOK, sinónimos no técnicos, metáforas o interpretaciones. La HISTORIA VISUAL y la NOTA FACILITADOR sí pueden tener narrativa libre — el **TEXTO EN PANTALLA**, no.
+
+---
+
+## Modelo de profundidad
+
+Las presentaciones técnicas de Ingnovarte siguen este modelo de profundidad:
+
+| Nivel | Descripción | Estado |
+|---|---|---|
+| 1 | Slides del Tópico (solo nombre del tópico) | — Insuficiente |
+| 2 | Slides del Título del tema (encabezado de sección) | — Insuficiente |
+| 3 | Slides con palabras clave de los Subtítulos del tema | ❌ No es el estándar |
+| **4** | **Slides con palabras clave, infografías o frases que explican el concepto decada subtítulo** | **✅ OBJETIVO** |
+| 5 | Slides con textos largos extraídos directamente del tema | — Excede estándar |
+| 6 | Slides con textos idénticos a los del tema | — Excede estándar |
+
+**El estándar de Ingnovarte es Nivel 4.** Esto significa:
+
+- Cada párrafo-título del BBOK (los encabezados en negrita dentro de cada sección `###`) genera una slide propia.
+- El TEXTO EN PANTALLA de cada slide contiene las frases explicativas del párrafo fuente — tomadas verbatim del BBOK — no solo el nombre del subtítulo.
+- Las tablas del BBOK generan slides TÉCNICO independientes.
+- El número de slides se **deriva de la estructura del BBOK**, no de una proporción de tiempo. El tiempo se asigna después.
+- Resultado esperado: más slides por tópico que en Nivel 3, mayor fidelidad técnica, menor inferencia del diseñador.
+
+---
+
+## Catálogo de recursos visuales
+
+El brief de cada slide **debe especificar un recurso visual del catálogo**. El agente elige el más apropiado para el concepto — nunca por defecto ni por comodidad. La **variedad es obligatoria**: dentro de un mismo tópico, no se permite el mismo recurso más de 2 veces consecutivas; un tópico con 8+ slides CONCEPTO debe usar al menos 4 recursos distintos.
+
+| Código | Recurso | Cuándo usar |
+|---|---|---|
+| `foto-contextual` | Fotografía o ilustración que muestra el concepto en el contexto operativo real del curso — equipo, instalación, proceso, entorno de trabajo típico del participante | Cuando el concepto tiene representación física clara y el participante puede reconocerse en esa situación |
+| `video-en-monitor` | Video corto reproducido dentro de la composición como si fuera la pantalla de un equipo o dispositivo real (bezel visible, interfaz de operación reconocible) | Cuando el concepto involucra un proceso dinámico: un sistema respondiendo, un procedimiento ejecutándose, un evento desarrollándose en el tiempo |
+| `galería-netflix` | Conjunto de 3–6 imágenes o ilustraciones presentadas como tarjetas de contenido tipo streaming — fondo oscuro, título corto en cada tarjeta, disposición en grilla | Cuando hay varios casos, tipos, variantes o ejemplos del mismo concepto que deben mostrarse en paralelo |
+| `sección-transversal` | Corte transversal o vista explosionada del equipo, instalación o sistema que revela lo que no se ve a simple vista | Cuando el concepto es un componente interno, una capa oculta o una estructura que requiere ver su interior para entenderse |
+| `animación-de-trayecto` | Composición donde un flujo (energía, señal, material, datos, proceso, decisión) recorre un camino animado sobre el escenario — la ruta se dibuja en tiempo real | Cuando el concepto trata sobre movimiento, propagación, secuencia o transferencia: cómo algo viaja, se transmite o se propaga de A a B |
+| `mapa-de-zona` | Vista isométrica, planimétrica o esquemática del espacio físico o lógico con zonas, sectores o áreas marcadas, coloreadas y etiquetadas | Cuando el concepto define áreas, alcances, límites o distribuciones dentro de un espacio — planta, red, sistema, proceso o estructura organizacional |
+| `dato-prominente` | Un valor numérico, porcentaje, cifra técnica o indicador en tipografía gigante como protagonista visual, con mínimo contexto adicional | Cuando el concepto central es una cifra clave: un valor normativo, un umbral crítico, un indicador de desempeño o una estadística de impacto |
+| `panel-de-instrumento` | Simulación gráfica de un instrumento, interfaz, dashboard, panel de control o pantalla de sistema mostrando un valor, estado o condición específica | Para slides de medición, lectura de indicadores, criterios de aceptación, estados del sistema o interpretación de resultados |
+| `diagrama-esquemático` | Diagrama lógico, diagrama de bloques, esquema de relaciones, arquitectura del sistema o mapa de proceso, dibujado en el estilo visual del tema del curso | Para mostrar relaciones, jerarquías, arquitecturas, flujos de proceso o la disposición de los componentes de un sistema |
+| `antes-después` | Dos estados contrastados en pantalla dividida: situación incorrecta vs correcta, estado sin intervención vs con intervención, antes de la práctica vs después | Cuando el concepto define qué cambia con o sin la aplicación de la técnica, el componente, el procedimiento o el cumplimiento normativo |
+
+**Regla de variedad (obligatoria):** El agente debe planificar la distribución de recursos al diseñar la arquitectura (Paso D). Reportar el recurso asignado a cada CONCEPTO en la tabla de arquitectura como columna adicional . Si detecta 3 slides consecutivas con el mismo recurso, cambiar el tercero antes de continuar.
+
+
+---
+
+## Principios de dual-coding (obligatorios en CONCEPTO)
+
+Cada slide CONCEPTO debe satisfacer los 5 principios antes de finalizar el BRIEF DISEÑO. El agente valida esta lista al redactar cada slide:
+
+| # | Principio | Regla operativa |
+|---|---|---|
+| 1 | **Multimedia** | El visual debe expresar algo que las palabras solas no pueden — si solo repite el texto, rediseñar |
+| 2 | **Estructura cognitiva** | El tipo de diagrama debe reflejar la organización del concepto: causal → causa-efecto · secuencial → flujo/línea de tiempo · jerárquico → árbol · espacial → posicional · comparativo → lado a lado |
+| 3 | **Contigüidad** | Los labels van directamente sobre el diagrama — nunca en leyenda separada ni en cuadro de texto aparte |
+| 4 | **Coherencia** | Eliminar todo elemento sin función informativa: fondos decorativos, iconos de adorno, gradientes sin significado |
+| 5 | **Señalización** | Cada color codifica un significado específico — si un color no comunica algo concreto, no debe usarse |
+
 
 ---
 
@@ -85,27 +166,39 @@ Presentar las 3 propuestas al usuario y esperar su selección antes de continuar
 
 ### 3. Diseñar la arquitectura de slides
 
-Basarse en el Esquema minuto a minuto:
+Basarse en el BBOK y en el Esquema minuto a minuto. El conteo de slides se **deriva de la estructura del BBOK** (Nivel 4), no de minutos.
 
-1. Contar los tópicos principales y sus duraciones
-2. Calcular slides de contenido: **1 slide cada 3–4 minutos de contenido activo** (no contar actividades ni evaluaciones)
-   - Excepción obligatoria: las actividades prácticas del Esquema (`P`) sí deben incluirse como slides de arquitectura, conservando exactamente el título del Esquema y su duración.
-3. Sumar estructura fija:
-   - 1 slide PORTADA
-   - 1 slide AGENDA
-   - 1 slide DIVISOR por cada tópico principal
-   - 1 slide CIERRE/SÍNTESIS
-4. Producir tabla de arquitectura antes de generar los briefs:
+**Paso A — Derivar slides desde el BBOK (por cada tópico):**
+1. Identificar las secciones `###` del tópico en el BBOK.
+2. Por cada sección `###`, listar los párrafo-títulos (encabezados en negrita dentro del texto).
+3. Cada párrafo-título = **1 slide CONCEPTO o TÉCNICO**.
+4. Cada tabla del BBOK = **1 slide TÉCNICO adicional** (independiente del párrafo que la introduce).
+5. Si un párrafo-título no tiene contenido explicativo sustantivo propio, agrupar con el anterior o con la sección.
+6. Si el párrafo genera más de 6 elementos de texto, dividir en Parte 1 / Parte 2 con el mismo título.
+
+**Paso B — Agregar estructura fija:**
+1. 1 slide PORTADA
+2. 1 slide AGENDA
+3. 1 slide DIVISOR por cada tópico principal
+4. Las actividades prácticas del Esquema (`P`) se incluyen como slides ACTIVIDAD — conservar exactamente el título del Esquema y la duración.
+5. 1 slide CIERRE/SÍNTESIS
+
+**Paso C — Asignar duración estimada:**
+Una vez definido el total de slides de contenido, distribuir el tiempo del Esquema entre ellas. El tiempo por slide resultante es orientativo para el instructor, no un límite de diseño.
+
+**Paso D — Producir tabla de arquitectura antes de generar los briefs:**
 
 ```markdown
-| # | Tipo | Título BBOK exacto | Tópico fuente | Min. aprox. | Observación de trazabilidad |
-|---|---|---|---|---|---|
-| 1 | PORTADA | [nombre exacto del curso] | — | — | Portada institucional |
-| 2 | AGENDA | [títulos exactos de tópicos BBOK] | — | — | Agenda construida solo con tópicos BBOK |
-| 3 | DIVISOR | [título exacto del Tópico 1 en BBOK] | Tópico 1 | — | Divisor del tópico fuente |
-| 4 | CONCEPTO | [título exacto del bloque BBOK] | Tópico 1 | 3 | Slide trazada al BBOK |
+| # | Tipo | Título BBOK exacto | Tópico fuente | Resumen del slide | Min. aprox. | Observación de trazabilidad |
+|---|---|---|---|---|---|---|
+| 1 | PORTADA | [nombre exacto del curso] | — | Portada institucional del curso | — | Portada institucional |
+| 2 | AGENDA | [títulos exactos de tópicos BBOK] | — | [Tópico 1] · [Tópico 2] · [Tópico N] | — | Agenda construida solo con tópicos BBOK |
+| 3 | DIVISOR | [título exacto del Tópico 1 en BBOK] | Tópico 1 | Separador de tópico | — | Divisor del tópico fuente |
+| 4 | CONCEPTO | [título exacto del bloque BBOK] | Tópico 1 | [concepto 1] · [concepto 2] · [concepto 3] | 3 | Slide trazada al BBOK |
 ...
 ```
+
+El campo **Resumen del slide** contiene 3–5 conceptos clave del BBOK separados por ` · `, que describen de qué trata específicamente esa slide. Para slides estructurales (PORTADA, DIVISOR, ACTIVIDAD) puede ser una frase funcional corta.
 
 Mostrar la arquitectura al usuario y pedir confirmación antes de generar todos los briefs.
 
@@ -118,7 +211,7 @@ Usar la siguiente taxonomía:
 | **PORTADA** | Slide de apertura — solo nombre del curso, cliente, logo |
 | **AGENDA** | Tabla de contenido con los tópicos del curso |
 | **DIVISOR** | Separador entre tópicos — visual completo, solo título del tópico |
-| **CONCEPTO** | Idea, principio o definición expresada mediante metáfora visual |
+| **CONCEPTO** | Idea, principio o definición del BBOK expresada mediante imagen o composición visual |
 | **TÉCNICO** | Diagrama, tabla, animación de componente o proceso — requiere datos exactos del BBOK |
 | **EJEMPLO** | Caso real, escenario operativo, ejercicio o situación de aplicación |
 | **ACTIVIDAD** | Momento práctico definido en el Esquema — conservar exactamente el título del Esquema |
@@ -140,8 +233,18 @@ Para cada slide, producir el bloque completo según el formato de output. Ver se
 
 **CONCEPTO:**
 - La slide MUESTRA la idea visualmente antes de que el instructor la explique
-- El texto en pantalla son etiquetas que anclan el visual, no la explicación
-- Identificar la metáfora que mejor comunica el concepto en el contexto industrial del participante
+- La fuente de cada slide CONCEPTO es el **párrafo-título** del BBOK (encabezado en negrita dentro de la sección)
+- **Proceso de extracción Nivel 4:**
+  1. Leer el párrafo completo cuyo título es la fuente de esta slide
+  2. **Identificar la pregunta del aprendiz:** ¿qué pregunta implícita tiene el participante en este punto del curso que esta slide responde? (ej: "¿Cuándo exactamente aplica esta restricción?") — esa pregunta define qué frases del BBOK priorizar
+  3. Identificar las 3–5 frases que **explican** ese título: las que definen el concepto, establecen la causa/consecuencia, fijan un requisito, dan valores o clasifican
+  4. Condensar cada frase a ≤ 7 palabras si es label; conservar completa (≤ 15 palabras) si es definición o requisito directo del BBOK
+  5. Todo texto proviene del BBOK — prohibido sintetizar, parafrasear o completar ideas
+  - **Densidad máxima:** Máximo **3 bullets × 7 palabras** en TEXTO EN PANTALLA por slide CONCEPTO. Si el párrafo fuente genera más de 3 ideas sustantivas → crear slides adicionales (Parte 1, Parte 2) en lugar de comprimir. La compresión destruye Nivel 4.
+- **Recurso visual + disposición del texto:** Elegir del Catálogo de recursos visuales. Especificar en BRIEF DISEÑO:
+  -  — código del catálogo (foto-contextual, video-en-monitor, galería-netflix, sección-transversal, animación-de-trayecto, mapa-de-zona, dato-prominente, panel-de-instrumento, diagrama-esquemático, antes-después)
+  -  — cómo se organizan los elementos de texto sobre ese recurso: , , , , 
+  - **Verificar variedad:** ¿es el mismo recurso que la slide anterior? Si es la tercera consecutiva igual → cambiar
 
 **TÉCNICO:**
 - Copiar verbatim del BBOK todos los valores, tolerancias, normas ISO/ANSI, fórmulas y nombres de componentes que deben aparecer en el visual
@@ -198,11 +301,11 @@ Para cada slide, producir el bloque completo según el formato de output. Ver se
 
 ## Arquitectura de Slides
 
-| # | Tipo | Título BBOK exacto | Tópico fuente | Min. aprox. | Observación de trazabilidad |
-|---|---|---|---|---|---|
-| 1 | PORTADA | [nombre exacto del curso] | — | — | Portada institucional |
+| # | Tipo | Título BBOK exacto | Tópico fuente | Resumen del slide | Min. aprox. | Observación de trazabilidad |
+|---|---|---|---|---|---|---|
+| 1 | PORTADA | [nombre exacto del curso] | — | Portada institucional del curso | — | Portada institucional |
 ...
-| N | CIERRE | Síntesis del curso | — | — | Cierre institucional |
+| N | CIERRE | Síntesis del curso | — | [concepto 1] · [concepto 2] · [concepto 3] | — | Cierre institucional |
 **Total: N slides**
 
 ---
@@ -298,21 +401,31 @@ Una transición visual clara — el participante sabe que empieza una nueva secc
 **TEXTO EN PANTALLA**
 | Elemento | Texto | Posición |
 |---|---|---|
-| [Etiqueta 1] | [texto ≤ 6 palabras] | [posición] |
-| [Etiqueta 2] | [texto ≤ 6 palabras] | [posición] |
-| [Concepto clave] | [frase central — puede ser 1 oración] | [posición dominante] |
+| [Etiqueta 1] | [término o frase verbatim del BBOK — ≤ 6 palabras] | [posición] |
+| [Etiqueta 2] | [término o frase verbatim del BBOK — ≤ 6 palabras] | [posición] |
+| [Concepto clave] | [definición o requisito tomado textualmente del BBOK] | [posición dominante] |
 
-*Máximo 6 elementos de texto en pantalla.*
+*Máximo 6 elementos de texto en pantalla. Todo texto proviene del BBOK — no parafrasear.*
+
+**PREGUNTA DEL APRENDIZ**
+[¿Qué pregunta implícita tiene el participante en este punto del curso que esta slide responde? Una frase. Ej: "¿Cuándo exactamente aplica esta restricción?". Si no puedes formularla, el contenido de la slide no está enfocado aún.]
 
 **HISTORIA VISUAL**
 [Una frase: qué hace ver/sentir esta slide al participante. No qué explica — qué muestra.]
 
 **BRIEF DISEÑO**
-- Escena: [descripción específica del fondo/ambiente — dentro del tema visual del curso]
-- Elemento principal: [objeto, fotografía o composición que vehicula el concepto — descripción precisa, no genérica. "Fotografía de un operador minero mirando hacia abajo desde una berma" es válido. "Imagen industrial" NO es válido.]
-- Elemento secundario: [descripción + posición en pantalla]
+- Recurso visual: [código del catálogo — foto-contextual | video-en-monitor | galería-netflix | sección-transversal | animación-de-trayecto | mapa-de-zona | dato-prominente | panel-de-instrumento | diagrama-esquemático | antes-después]
+- Disposición del texto: [label-visual | lista-enumerada | comparativo | flujo-animado | libre]
+- Descripción visual: [40–60 palabras. Incluir: qué elemento domina el espacio visual, qué color/forma/posición define el layout, qué jerarquía visual tiene el texto, qué emoción o estado mental transmite al participante. Ejemplo válido: "Primer plano de un panel de control con indicadores en rojo. Operador de espaldas en el tercio izquierdo, creando tensión. Etiquetas técnicas en tipografía blanca flotan sobre los indicadores en el tercio derecho, sobre fondo oscuro." — "imagen industrial técnica" NO es válido.]
+- Punto de atención: [qué elemento debe capturar el ojo primero — el diseñador lo jerarquiza con tamaño, contraste o posición]
 - Conexiones visuales: [flechas, líneas, hilos, relaciones entre elementos si aplica]
-- Paleta: [colores dominantes — referencia al tema visual]
+- Paleta: [colores dominantes — con valores HEX del tema visual]
+- Checklist dual-coding:
+  - [ ] Multimedia: ¿el visual expresa algo que las palabras solas no pueden?
+  - [ ] Estructura cognitiva: ¿el tipo de diagrama refleja la organización del concepto? (causal → causa-efecto | secuencial → flujo/línea de tiempo | jerárquico → árbol | espacial → posicional | comparativo → lado a lado)
+  - [ ] Contigüidad: ¿los labels están posicionados sobre el diagrama? Nunca en leyenda separada.
+  - [ ] Coherencia: ¿cada elemento visual tiene función informativa? Eliminar decorativos.
+  - [ ] Señalización: ¿cada color codifica un significado específico?
 
 **SECUENCIA DE ANIMACIÓN**
 1. [Primer elemento — establece el contexto]
@@ -417,9 +530,9 @@ Una transición visual clara — el participante sabe que empieza una nueva secc
 | Elemento | Texto | Posición |
 |---|---|---|
 | Header | ¿Qué aprendimos? | Superior |
-| Punto 1 | [concepto clave — ≤ 6 palabras] | [posición en visual] |
-| Punto 2 | [concepto clave — ≤ 6 palabras] | [posición en visual] |
-| Punto 3 | [concepto clave — ≤ 6 palabras] | [posición en visual] |
+| Punto 1 | [concepto clave verbatim del BBOK — ≤ 6 palabras] | [posición en visual] |
+| Punto 2 | [concepto clave verbatim del BBOK — ≤ 6 palabras] | [posición en visual] |
+| Punto 3 | [concepto clave verbatim del BBOK — ≤ 6 palabras] | [posición en visual] |
 
 **HISTORIA VISUAL**
 El participante ve los conceptos clave del tópico/curso conectados — el mapa mental de lo aprendido.
@@ -441,13 +554,13 @@ El participante ve los conceptos clave del tópico/curso conectados — el mapa 
 
 ## Resumen de Slides
 
-| # | Tipo | Título BBOK exacto | Tópico fuente | Observación de trazabilidad |
-|---|---|---|---|---|
-| 1 | PORTADA | [nombre exacto del curso] | — | Portada institucional |
-| 2 | AGENDA | [títulos exactos de tópicos BBOK] | — | Agenda construida solo con tópicos BBOK |
-| 3 | DIVISOR | [título exacto del Tópico 1 en BBOK] | Tópico 1 | Divisor del tópico fuente |
-| ... | | | | |
-| N | CIERRE | Síntesis del curso | — | Cierre institucional |
+| # | Tipo | Título BBOK exacto | Tópico fuente | Resumen del slide | Observación de trazabilidad |
+|---|---|---|---|---|---|
+| 1 | PORTADA | [nombre exacto del curso] | — | Portada institucional del curso | Portada institucional |
+| 2 | AGENDA | [títulos exactos de tópicos BBOK] | — | [Tópico 1] · [Tópico 2] · [Tópico N] | Agenda construida solo con tópicos BBOK |
+| 3 | DIVISOR | [título exacto del Tópico 1 en BBOK] | Tópico 1 | Separador de tópico | Divisor del tópico fuente |
+| ... | | | | | |
+| N | CIERRE | Síntesis del curso | — | [concepto 1] · [concepto 2] · [concepto 3] | Cierre institucional |
 
 **Total: [N] slides**
 **Distribución por tipo:** PORTADA: 1 | AGENDA: 1 | DIVISOR: X | CONCEPTO: X | TÉCNICO: X | EJEMPLO: X | ACTIVIDAD: X | CIERRE: X
@@ -457,13 +570,16 @@ El participante ve los conceptos clave del tópico/curso conectados — el mapa 
 
 ## Limits
 
-- **Sin bullets en pantalla.** El texto en pantalla son etiquetas posicionadas, no listas. Máximo 6 elementos de texto por slide. Cada elemento: ≤ 6 palabras, salvo paneles de definición (1–2 oraciones) y celdas de tabla técnica.
+- **Sin bullets en pantalla.** El texto en pantalla son etiquetas posicionadas, no listas. **Máximo 3 bullets × 7 palabras por slide CONCEPTO.** Si el contenido del párrafo BBOK supera esa densidad → crear slides adicionales (Parte 1, Parte 2) antes que comprimir. La compresión es el camino de regreso a Nivel 3. Paneles de definición o requisitos directos del BBOK: ≤ 15 palabras por elemento.
+- **Pregunta del aprendiz en cada CONCEPTO.** Antes de redactar el texto de la slide, identificar en una frase la pregunta implícita del participante que esta slide responde. Si no puede formularse, el enfoque del contenido es incorrecto — revisar qué dice el párrafo BBOK fuente.
 - **Sin datos técnicos parafraseados.** Los valores, tolerancias, normas, fórmulas y nombres de componentes se copian verbatim del BBOK. El diseñador no conoce el dominio.
 - **Sin descripciones visuales genéricas.** "Imagen industrial", "foto de equipo", "gráfico representativo" no son briefs válidos. Cada elemento visual debe describirse con suficiente detalle para que el diseñador lo cree sin preguntar.
 - **La animación es parte del contenido, no decoración.** Todo slide TÉCNICO y CONCEPTO debe tener secuencia de animación especificada. El orden en que aparecen los elementos es el orden en que el instructor construye la explicación.
-- **Un concepto por slide.** Si hay dos ideas, son dos slides. Si una animación tiene más de 4 pasos, puede necesitar dos slides.
+- **Un párrafo-título por slide (Nivel 4).** Cada encabezado de párrafo del BBOK = 1 slide propia. Si el párrafo genera más de 6 elementos de texto, dividir en Parte 1 / Parte 2. Si dos párrafo-títulos consecutivos son muy cortos y relacionados, pueden agruparse — pero solo en ese caso.
 - **El instructor es el protagonista.** La slide no explica — muestra. La NOTA FACILITADOR contiene la explicación; el BRIEF DISEÑO contiene lo que se ve en pantalla.
 - **Cursos > 60 slides:** generar por tópico, confirmando con el usuario antes de avanzar al siguiente.
+- **Variedad visual obligatoria.** No repetir el mismo recurso visual más de 2 veces consecutivas. Un tópico con 8+ slides CONCEPTO debe usar al menos 4 recursos distintos del catálogo. Uniformidad visual = falla de diseño.
+- **Dual-coding obligatorio en CONCEPTO.** Antes de finalizar cada BRIEF DISEÑO, verificar los 5 principios: (1) el visual expresa algo que el texto solo no puede; (2) el tipo de diagrama refleja la organización cognitiva del concepto (causal/secuencial/jerárquico/espacial/comparativo); (3) los labels van sobre el diagrama, nunca en leyenda; (4) sin elementos decorativos — todo aporta información; (5) los colores codifican significado, no estética.
 
 ---
 
