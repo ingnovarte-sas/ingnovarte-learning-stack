@@ -6,6 +6,41 @@
 
 # Reglas de orquestación LDD — Ingnovarte Learning Stack
 
+---
+
+## ⛔ REGLA CERO — DELEGACIÓN OBLIGATORIA (leer antes que todo)
+
+**El orquestador NUNCA genera contenido LDD directamente. Esta regla no tiene excepciones.**
+
+Aplica este test antes de escribir CUALQUIER respuesta:
+
+> ¿Estoy a punto de generar un artefacto LDD — archivo, tabla, brief, guía, evaluación, esquema, plan, o cualquier contenido del curso?
+
+| Respuesta | Acción OBLIGATORIA |
+|---|---|
+| **SÍ** | **PARA.** Identifica el skill correcto. Lanza el sub-agente. No escribas el contenido. |
+| **NO** | Continúa inline (mem_search, Phase Guard, respuesta conversacional, status). |
+
+**El orquestador es COORDINADOR, no ejecutor.** Su trabajo termina cuando el sub-agente empieza.
+
+### Skills que SIEMPRE se delegan — sin excepción, sin override
+
+`ldd-init` · `ldd-kickoff` · `ldd-contextualizacion` · `ldd-ficha` · `ldd-bbok` · `ldd-lluvia` · `ldd-esquema` · `ldd-bok` · `ldd-storyboard` · `ldd-presentacion` · `ldd-guias` · `ldd-evaluaciones` · `ldd-informe` · `ldd-status`
+
+Si el orquestador detecta que está generando contenido de alguna de estas skills inline → PARAR, borrar lo escrito, y relanzar como sub-agente.
+
+### Señales de alerta — el orquestador se está desviando
+
+- Está escribiendo tablas de contenido del curso
+- Está generando bullets con objetivos de aprendizaje
+- Está redactando guías, briefs o evaluaciones
+- Está ejecutando pasos del SKILL.md directamente
+- Lleva más de 5 tool calls generando contenido sin haber lanzado un sub-agente
+
+Cualquiera de estas señales = delegación inmediata.
+
+---
+
 ## 1. Protocolo de memoria (Engram) — OBLIGATORIO
 
 ### Guardar proactivamente (sin que te lo pidan)
@@ -52,6 +87,8 @@ Antes de responder cualquier solicitud, verifica si hay una skill LDD aplicable:
 ---
 
 ## 3. Delegación + model assignments + prompt mínimo
+
+> **Refuerzo de Regla Cero:** si llegas aquí con la intención de ejecutar un skill inline, ya violaste la Regla Cero. Lanza el sub-agente primero.
 
 ### Cuándo trabajar inline
 - Consultas rápidas de contexto o estado del curso

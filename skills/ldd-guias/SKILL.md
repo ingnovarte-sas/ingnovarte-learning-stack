@@ -17,6 +17,22 @@ metadata:
 license: "proprietary"
 ---
 
+## Modo de ejecución
+
+Esta skill genera múltiples documentos de guía con instrucciones detalladas por actividad. Para proteger el contexto del orquestador:
+
+**Esta skill DEBE ejecutarse como sub-agente. No ejecutar inline.**
+
+Prompt mínimo para el sub-agente:
+> Ejecuta la skill `ldd-guias` para el curso [código].
+> Lee el SKILL.md completo antes de comenzar: `skills/ldd-guias/SKILL.md`
+> Lee Lluvia de Ideas desde Engram: `ldd/{código}/lluvia`
+> Lee Esquema desde Engram: `ldd/{código}/esquema`
+> Genera UNA sección por actividad con consigna printer-ready para el participante.
+> Guarda el archivo en: `cursos/{carpeta}/03_Creación/guias-actividades.md`
+
+---
+
 ## When to Use
 
 Usa esta skill cuando:
@@ -34,7 +50,7 @@ No uses esta skill para:
 
 1. **Verificar prerequisitos**: buscar en Engram `ldd/{código}/lluvia` y `ldd/{código}/esquema`
 2. **Identificar las actividades aprobadas** en la Lluvia de Ideas (Validación Interna ✓)
-3. **Por cada actividad**, desarrollar la guía completa siguiendo la estructura de Outputs
+3. **Por cada actividad**, desarrollar la guía completa siguiendo la estructura de Outputs. Cada actividad genera una sección autónoma — la "Consigna para el participante" debe ser printer-ready: numerada, en 2a persona, con entregable y criterio explícitos, legible sin contexto adicional
 4. **Verificar alineación**: cada guía debe referenciar el objetivo específico de la Ficha Técnica al que contribuye
 5. **Definir configuración LMS** si la actividad requiere montaje en plataforma (Gforms, app, etc.)
 6. **Guardar en Engram**: `topic_key: ldd/{código}/guias`
@@ -95,11 +111,27 @@ Contribuye al objetivo específico: "[citar el objetivo específico de la Ficha 
 
 ---
 
-### Instrucciones para el participante
+### Consigna para el participante
+> *Este bloque se imprime o proyecta. El participante lo recibe SIN explicación adicional — debe ser autosuficiente.*
 
-> *Estas instrucciones se entregan al participante al inicio de la actividad.*
+**Actividad: [Nombre de la actividad]**
+**Tiempo disponible: [X] minutos**
 
-[texto en segunda persona, claro y directo]
+**Lo que vas a hacer:**
+[1 frase que describe el propósito desde el punto de vista del participante]
+
+**Pasos:**
+
+1. [Acción concreta — qué hace primero el participante con qué recurso]
+2. [Acción concreta — qué analiza, calcula, decide o produce]
+3. [Acción concreta — qué registra, discute o presenta]
+4. [Acción concreta — cómo cierra su participación]
+
+**Lo que debes entregar al final:**
+[producto concreto: hoja completada / respuesta oral / diagrama marcado / decisión justificada / etc.]
+
+**Criterio de éxito:**
+[cómo sabe el participante que lo hizo bien — sin que el instructor tenga que decírselo]
 
 ---
 
@@ -131,6 +163,8 @@ Contribuye al objetivo específico: "[citar el objetivo específico de la Ficha 
 - Los materiales deben coincidir con los listados en la Lluvia de Ideas
 - Si una actividad requiere materiales que el cliente no confirmó tener, marcarlo como `[PENDIENTE CONFIRMACIÓN]`
 - No incluir contenido técnico del curso en la guía — el contenido va en el BOK y la presentación
+- **La consigna del participante debe ser autosuficiente.** Si requiere que el facilitador explique qué hacer antes de leerla, no cumple el estándar. Test: ¿puede el participante ejecutar la actividad leyendo solo la consigna? Si no → reescribir.
+- **Una sección por actividad** — cada sección es independiente y puede imprimirse por separado para entregar al participante
 
 ## Plan Update
 
