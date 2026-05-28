@@ -147,7 +147,7 @@ Busca contexto adicional en Engram: mem_search(query: "ldd/{código}", project: 
 |---|---|
 | ldd-init, ldd-kickoff, ldd-ficha, ldd-lluvia, ldd-esquema, ldd-guias, ldd-review, ldd-informe, ldd-status | sonnet |
 | ldd-bbok, ldd-bok, ldd-storyboard, ldd-evaluaciones | opus |
-| ldd-presentation | sonnet | Generación de código + descarga de assets |
+| ldd-presentation | sonnet |
 | Consultas rápidas, verificaciones | haiku |
 | default | sonnet |
 
@@ -175,8 +175,8 @@ Antes de delegar o ejecutar CUALQUIER skill LDD, verifica en Engram que existe e
 | ldd-bbok | `ldd/{code}/ficha` | "Falta la Ficha Técnica aprobada. ¿Deseas generarla primero con ldd-ficha?" |
 | ldd-lluvia | `ldd/{code}/bbok` | "Falta el BBOK (no acepta la Ficha como alternativa). ¿Deseas generarlo primero?" |
 | ldd-esquema | `ldd/{code}/lluvia` | "Falta la Lluvia de Ideas. ¿Deseas generarla primero con ldd-lluvia?" |
-| ldd-bok | `ldd/{code}/bbok` | "Falta el BBOK. ¿Deseas generarlo primero con ldd-bbok?" |
-| ldd-storyboard | `ldd/{code}/bok` | "Falta el BOK final. ¿Deseas generarlo primero con ldd-bok?" |
+| ldd-bok | `ldd/{code}/presentation-path` | "Falta la presentación finalizada por el equipo de diseño. Ejecuta ldd-presentation y confirma que el diseño gráfico está aprobado antes de generar el BOK." |
+| ldd-storyboard | `ldd/{code}/bbok` + `ldd/{code}/esquema` | "Faltan el BBOK o el Esquema. ¿Deseas generarlos primero?" |
 | ldd-presentation | `ldd/{code}/storyboard` | "Falta el storyboard aprobado. ¿Deseas ejecutar ldd-storyboard primero?" |
 | ldd-guias | `ldd/{code}/lluvia` + `ldd/{code}/esquema` | "Faltan la Lluvia de Ideas o el Esquema. ¿Deseas generarlos primero?" |
 | ldd-evaluaciones | `ldd/{code}/ficha` + `ldd/{code}/bbok` | "Faltan la Ficha o el BBOK/BOK. ¿Deseas generarlos primero?" |
@@ -184,6 +184,41 @@ Antes de delegar o ejecutar CUALQUIER skill LDD, verifica en Engram que existe e
 | ldd-informe (eficacia) | `ldd/{code}/evaluaciones` + resultados | "Faltan los resultados de evaluaciones. Proporciona los datos primero." |
 | ldd-init | _(sin prerequisito — es el primer paso)_ | — |
 | ldd-review | _(transversal, sin prerequisito)_ | — |
+
+
+### Flujo de ejecución LDD — secuencial y paralelo
+
+```
+SECUENCIAL — orden estricto sin excepciones:
+ldd-init → ldd-kickoff → ldd-contextualizacion → ldd-ficha → ldd-bbok
+
+Desde ldd-bbok se abren tres pistas paralelas:
+
+Pista A — Diseño instruccional
+  ldd-bbok → ldd-lluvia → ldd-esquema
+                               └─ ldd-guias
+
+Pista B — Contenido visual  (espera a que ldd-esquema esté listo)
+  ldd-storyboard → ldd-presentation → [diseño gráfico] → ldd-bok
+
+Pista C — Evaluaciones  (puede arrancar apenas ldd-bbok está listo)
+  ldd-evaluaciones
+
+Cierre:
+  ldd-informe retro     — post-entrenamiento, sin prerequisito de sistema
+  ldd-informe eficacia  — necesita ldd-evaluaciones + resultados reales
+```
+
+**Reglas de paralelismo:**
+
+| Momento | Qué puede correr en paralelo |
+|---|---|
+| Tras `ldd-bbok` | Pista A (`ldd-lluvia`) y Pista C (`ldd-evaluaciones`) |
+| Tras `ldd-esquema` | `ldd-guias` (fin de Pista A) y `ldd-storyboard` (inicio de Pista B) |
+| Tras `ldd-presentation` + diseño aprobado | `ldd-bok` (Pista B) — Pista A y C ya deberían estar completas |
+
+**Dependencia crítica de Pista B:**
+`ldd-storyboard` necesita tanto `ldd-bbok` como `ldd-esquema` — la Pista B no puede arrancar hasta que la Pista A llegue a `ldd-esquema`.
 
 ### Override de Phase Guard
 
