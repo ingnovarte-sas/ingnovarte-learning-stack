@@ -119,7 +119,7 @@ ingnovarte-learning-stack/
 │   ├── ldd-lluvia/            # Lluvia de Ideas
 │   ├── ldd-esquema/           # Esquema minuto a minuto
 │   ├── ldd-bok/               # BOK final
-│   ├── ldd-presentacion/      # Borrador de presentación
+│   ├── ldd-storyboard/        # Storyboard slide por slide
 │   ├── ldd-guias/             # Guías de Actividades
 │   ├── ldd-evaluaciones/      # Evaluaciones y rúbricas
 │   ├── ldd-informe/           # Informes de retroalimentación y eficacia

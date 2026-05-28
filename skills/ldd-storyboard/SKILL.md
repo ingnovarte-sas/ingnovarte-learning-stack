@@ -1,16 +1,17 @@
 ---
-name: ldd-presentacion
-description: Genera el borrador completo de la presentación del curso — slide por slide — como documento formal de brief para el equipo de diseño gráfico, con historia visual, texto en pantalla, especificaciones técnicas y secuencia de animación por slide.
+name: ldd-storyboard
+description: Genera el storyboard slide por slide — brief formal por slide con historia visual, Huella BBOK, texto en pantalla, especificaciones de diseño y notas de facilitador.
 triggers:
+  - storyboard
+  - generar storyboard
+  - brief de presentación
+  - brief por slide
   - borrador presentación
   - presentación del curso
   - diapositivas
   - slides
-  - generar presentación
-  - storyboard presentación
   - brief para diseño
   - brief diseño gráfico
-  - contenido para diseño gráfico
 metadata:
   version: "3.4"
   author: "ingnovarte"
@@ -40,8 +41,8 @@ Esta skill genera 80–150+ slides (Nivel 4 — 1 slide por párrafo-título del
 
 El orquestador detecta la invocación de esta skill y lanza un sub-agente (herramienta `Agent` / Task tool) con el siguiente prompt mínimo:
 
-> Ejecuta la skill `ldd-presentacion` para el curso [código].
-> Lee el SKILL.md completo antes de comenzar: `skills/ldd-presentacion/SKILL.md`
+> Ejecuta la skill `ldd-storyboard` para el curso [código].
+> Lee el SKILL.md completo antes de comenzar: `skills/ldd-storyboard/SKILL.md`
 > Lee BBOK desde Engram: `ldd/{código}/bbok`
 > Lee Esquema desde Engram: `ldd/{código}/esquema`
 > Genera por tópico. Guarda el archivo en: `cursos/{carpeta}/03_Creación/borrador-presentacion.md`
@@ -618,4 +619,4 @@ Al finalizar la generación del brief de presentación:
 `ldd-esquema` debería generar el tema visual del curso como parte de su output
 (topic_key: `ldd/{código}/tema-visual`), integrando al instruccional y al equipo de
 diseño en esa decisión durante la fase de esquema. Mientras esa mejora no esté
-implementada, `ldd-presentacion` maneja la propuesta del tema visual en su paso 2.
+implementada, `ldd-storyboard` maneja la propuesta del tema visual en su paso 2.

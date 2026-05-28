@@ -24,7 +24,7 @@ Usa esta skill cuando:
 
 No uses esta skill para:
 - Generar actividades (usa `ldd-lluvia`)
-- Generar el borrador de presentación (usa `ldd-presentacion`)
+- Generar el borrador de presentación (usa `ldd-storyboard`)
 
 ## Steps
 

@@ -24,7 +24,7 @@ Usa esta skill cuando:
 
 No uses esta skill para:
 - Generar el borrador de contenido (usa `ldd-bbok`)
-- Generar la presentación (usa `ldd-presentacion` — toma el BOK como insumo)
+- Generar la presentación (usa `ldd-storyboard` — toma el BOK como insumo)
 
 ## Steps
 

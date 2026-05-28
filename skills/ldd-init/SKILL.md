@@ -207,7 +207,7 @@ El SPI por tarea individual:
 # 03 — Creación
 
 ## Archivos en esta carpeta
-- `presentacion/` — Presentación final del curso (output: ldd-presentacion)
+- `storyboard/` — Presentación final del curso (output: ldd-storyboard)
 - `guia-actividades.md` — Guía de actividades completa (output: ldd-guias)
 - `desarrollo/` — SCORM, aplicaciones, simuladores (si aplica)
 ```
