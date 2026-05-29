@@ -12,9 +12,9 @@ triggers:
   - montar la presentacion
   - armar el pptx
 metadata:
-  version: "1.2"
+  version: "1.3"
   author: "ingnovarte"
-  updated_at: "2026-05-28"
+  updated_at: "2026-05-29"
 license: "proprietary"
 ---
 
@@ -145,21 +145,32 @@ Resultado: lista de dicts Python, uno por slide. Verificar que el número total 
 
 ### 3. Indexar multimedia SharePoint
 
-Listar archivos en la carpeta multimedia de Ingnovarte para construir el índice de imágenes disponibles.
+Descargar el índice pre-generado `_index.md` desde SharePoint y parsearlo. Es una sola llamada a la API en lugar de listar carpeta por carpeta.
 
 **Configuración:**
 ```
 drive_id     = "b!_4s4r1EyNE-qv91Z8XTqUv51NwO5vgxIh4KXaqdQ2TkCI2ZatiG6R4eTl7SCbpzr"
 folder_id    = "017L4IGJP54PUFCV2WOVAIZECMDSL22J3Y"
+index_path   = "/drives/b!_4s4r1EyNE-qv91Z8XTqUv51NwO5vgxIh4KXaqdQ2TkCI2ZatiG6R4eTl7SCbpzr/items/017L4IGJP54PUFCV2WOVAIZECMDSL22J3Y:/_index.md:/content"
 ```
 
 **Procedimiento:**
-1. Llamar `mcp__ms365-work__list-folder-files` con `driveId` y `itemId = folder_id`
-2. Listar subcarpetas de `Fotografías/` usando el mismo tool con cada subfolder ID
-3. Construir índice: `{ nombre_sin_extension.lower(): downloadUrl }` para cada imagen (.jpg, .png, .jpeg)
-4. Guardar el índice en memoria (no en Engram — es temporal)
+1. Llamar `mcp__ms365-work__download-bytes` con `path = index_path`
+2. Decodificar el contenido (bytes → UTF-8)
+3. Parsear la tabla markdown — ignorar líneas que empiecen con `#`, `<!--` o `|---`:
+   ```python
+   index = {}
+   for line in content.splitlines():
+       if not line.startswith('|') or line.startswith('|---'):
+           continue
+       cols = [c.strip() for c in line.strip('|').split('|')]
+       if len(cols) >= 4 and cols[0] != 'path':
+           rel_path, description, tags, category = cols[0], cols[1], cols[2], cols[3]
+           index[rel_path] = {'description': description, 'tags': tags, 'category': category}
+   ```
+4. Guardar `index` en memoria (no en Engram — es temporal). Total esperado: ~3,252 entradas.
 
-> Si la lista falla (sin autenticación), continuar con `placeholder = True` para todas las imágenes y notificar al usuario al final.
+> Si la descarga falla (sin autenticación o error de red): continuar con `placeholder = True` para todas las imágenes y notificar al usuario al final.
 
 ### 4. Resolver imagen por slide
 
@@ -175,9 +186,9 @@ Para cada slide con `tipo` en {PORTADA, DIVISOR, CONCEPTO, TÉCNICO, EJEMPLO}:
 
 **Prioridad 2 — SharePoint multimedia** (foto contextual cuando no hay imagen BBOK):
 1. Extraer keywords del campo `descripcion_visual`: sustantivos técnicos y operativos (ignorar artículos, preposiciones, verbos comunes)
-2. Para cada archivo en el índice SharePoint: `score = suma de keywords que aparecen en nombre_archivo.lower()`
-3. Elegir el archivo con mayor score (empate: primero en orden alfabético)
-4. Si `score > 0`: descargar con `mcp__ms365-work__download-bytes` → guardar en `C:/Temp/ldd-pres-{código}/img_{num}.jpg`
+2. Para cada entrada en el índice: `score = número de keywords que aparecen en (description + " " + tags).lower()`
+3. Elegir la entrada con mayor score (empate: primera en orden de aparición en el índice)
+4. Si `score > 0`: descargar con `mcp__ms365-work__download-bytes` usando path `/drives/{drive_id}/root:/{rel_path}:/content` → guardar en `C:/Temp/ldd-pres-{código}/img_{num}.jpg`
 
 **Prioridad 3 — Placeholder** (último recurso):
 - Si `score == 0` o índice SharePoint vacío: `img_path = None` (rectángulo de color sólido del tema)
