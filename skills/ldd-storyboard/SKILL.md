@@ -13,9 +13,9 @@ triggers:
   - brief para diseño
   - brief diseño gráfico
 metadata:
-  version: "3.6"
+  version: "3.7"
   author: "ingnovarte"
-  updated_at: "2026-05-26"
+  updated_at: "2026-05-29"
 license: "proprietary"
 ---
 
@@ -187,6 +187,18 @@ Buscar en Engram:
 - `ldd/{código}/bbok` — si no existe, detener y pedir al usuario ejecutar `ldd-bbok` primero
 - `ldd/{código}/esquema` — si no existe, detener y pedir al usuario ejecutar `ldd-esquema` primero
 - `ldd/{código}/bbok-images` — opcional; si existe, cargar el manifiesto para referenciar imágenes técnicas del BBOK en los briefs de diseño
+
+**Cargar índice multimedia (opcional):**
+
+Si `ms365-work` está disponible, descargar el índice pre-generado de imágenes:
+
+```
+index_path = "/drives/b!_4s4r1EyNE-qv91Z8XTqUv51NwO5vgxIh4KXaqdQ2TkCI2ZatiG6R4eTl7SCbpzr/items/017L4IGJP54PUFCV2WOVAIZECMDSL22J3Y:/_index.md:/content"
+```
+
+Parsear la tabla markdown → construir `media_index = { rel_path: { description, tags, category } }` (~3,252 entradas). Guardar en memoria para usarlo en Step 5 al elegir imágenes `foto-contextual`.
+
+> Si la descarga falla (sin autenticación): continuar sin índice. Los campos `Imagen multimedia` quedarán `N/A` y `ldd-presentation` hará matching semántico.
 
 ### 2. Verificar o proponer el tema visual
 
@@ -470,8 +482,9 @@ Una transición visual clara — el participante sabe que empieza una nueva secc
 **BRIEF DISEÑO**
 - Imagen BBOK: [ruta relativa si el BBOK fuente tiene una imagen para esta sección — ej: `02_Esquema/bbok-images/media/image3.png`. Si no hay imagen BBOK, escribir `N/A`. Cuando existe, usarla como referencia visual base o como imagen del slide.]
 - Recurso visual: [código del catálogo — foto-contextual | video-en-monitor | galería-netflix | sección-transversal | animación-de-trayecto | mapa-de-zona | dato-prominente | panel-de-instrumento | diagrama-esquemático | antes-después]
+- Imagen multimedia: [**Solo cuando `Recurso visual = foto-contextual`**. Si el `media_index` está cargado: buscar la entrada más relevante usando keywords del contenido del slide contra `(description + tags).lower()` → escribir el `rel_path` de la mejor coincidencia. Si no hay índice o score = 0: escribir `N/A`. Ejemplo: `Fotografías/Operaciones mineras/General/Camión de acarreo de carbón en operaciones mineras (2).jpg`]
 - Disposición del texto: [label-visual | lista-enumerada | comparativo | flujo-animado | libre]
-- Descripción visual: [40–60 palabras. Incluir: qué elemento domina el espacio visual, qué color/forma/posición define el layout, qué jerarquía visual tiene el texto, qué emoción o estado mental transmite al participante. Ejemplo válido: "Primer plano de un panel de control con indicadores en rojo. Operador de espaldas en el tercio izquierdo, creando tensión. Etiquetas técnicas en tipografía blanca flotan sobre los indicadores en el tercio derecho, sobre fondo oscuro." — "imagen industrial técnica" NO es válido.]
+- Descripción visual: [40–60 palabras. **Si `Imagen multimedia` tiene valor**: basar la descripción en la imagen real seleccionada — usar su campo `description` del índice como punto de partida y ampliar con composición, jerarquía visual y emoción. **Si `N/A`**: describir el visual ideal — qué elemento domina el espacio, qué color/forma/posición define el layout, qué jerarquía tiene el texto, qué emoción transmite. Ejemplo válido: "Primer plano de un panel de control con indicadores en rojo. Operador de espaldas en el tercio izquierdo, creando tensión. Etiquetas técnicas en tipografía blanca flotan sobre los indicadores en el tercio derecho, sobre fondo oscuro." — "imagen industrial técnica" NO es válido.]
 - Punto de atención: [qué elemento debe capturar el ojo primero — el diseñador lo jerarquiza con tamaño, contraste o posición]
 - Conexiones visuales: [flechas, líneas, hilos, relaciones entre elementos si aplica]
 - Paleta: [colores dominantes — con valores HEX del tema visual]

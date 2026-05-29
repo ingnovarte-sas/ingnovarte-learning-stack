@@ -12,7 +12,7 @@ triggers:
   - montar la presentacion
   - armar el pptx
 metadata:
-  version: "1.3"
+  version: "1.4"
   author: "ingnovarte"
   updated_at: "2026-05-29"
 license: "proprietary"
@@ -184,7 +184,13 @@ Para cada slide con `tipo` en {PORTADA, DIVISOR, CONCEPTO, TÉCNICO, EJEMPLO}:
 3. Si el archivo existe en disco: `img_path = ruta_absoluta` → usar directamente, **sin descargar nada**
 4. Si la ruta no existe en disco: intentar reconstruir desde el índice Engram `bbok-images`
 
-**Prioridad 2 — SharePoint multimedia** (foto contextual cuando no hay imagen BBOK):
+**Prioridad 1.5 — Imagen multimedia directa** (elegida explícitamente en el storyboard):
+1. Leer campo `imagen_multimedia` del slide_data (extraído del storyboard)
+2. Si tiene valor (no es `N/A` ni vacío): descargar con `mcp__ms365-work__download-bytes` usando path `/drives/b!_4s4r1EyNE-qv91Z8XTqUv51NwO5vgxIh4KXaqdQ2TkCI2ZatiG6R4eTl7SCbpzr/root:/{imagen_multimedia}:/content`
+3. Si descarga correctamente: `img_path = ruta_descargada` → **no aplicar matching semántico**
+4. Si falla la descarga: continuar a Prioridad 2
+
+**Prioridad 2 — SharePoint multimedia** (foto contextual cuando no hay imagen BBOK ni imagen directa):
 1. Extraer keywords del campo `descripcion_visual`: sustantivos técnicos y operativos (ignorar artículos, preposiciones, verbos comunes)
 2. Para cada entrada en el índice: `score = número de keywords que aparecen en (description + " " + tags).lower()`
 3. Elegir la entrada con mayor score (empate: primera en orden de aparición en el índice)
